@@ -1,0 +1,141 @@
+/* ── Seller Products Page ── */
+
+.sp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.sp-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #1a2e1f;
+  margin: 0 0 4px;
+}
+
+.sp-sub {
+  color: #888;
+  font-size: 14px;
+  margin: 0;
+}
+
+.sp-add-btn {
+  background: #2e7d32;
+  color: #fff;
+  border: none;
+  padding: 11px 22px;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.sp-add-btn:hover { background: #1b5e20; }
+
+/* Search */
+.sp-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  border: 1px solid #e8edf0;
+  border-radius: 10px;
+  padding: 10px 16px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+
+.sp-search-bar input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-family: inherit;
+  font-size: 14px;
+  color: #333;
+  background: transparent;
+  direction: rtl;
+}
+
+.sp-search-bar input::placeholder { color: #bbb; }
+
+/* Zero stock */
+.sp-zero { color: #d32f2f; font-weight: 700; }
+
+/* ── Edit Modal ── */
+.sp-modal { width: 520px; max-width: 95vw; }
+
+.sp-img-wrap {
+  position: relative;
+  width: 120px;
+  margin: 0 auto 20px;
+}
+
+.sp-img-wrap img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 2px solid #eee;
+  display: block;
+}
+
+.sp-img-change {
+  display: block;
+  margin-top: 8px;
+  text-align: center;
+  font-size: 12px;
+  color: #2e7d32;
+  cursor: pointer;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.sp-edit-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.sp-full { grid-column: 1 / -1; }
+
+.sp-field label {
+  display: block;
+  font-size: 12.5px;
+  color: #666;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.sp-field input,
+.sp-field textarea {
+  width: 100%;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-family: inherit;
+  font-size: 14px;
+  color: #333;
+  background: #fafafa;
+  box-sizing: border-box;
+  transition: border 0.18s;
+  resize: vertical;
+}
+
+.sp-field input:focus,
+.sp-field textarea:focus {
+  border-color: #2e7d32;
+  outline: none;
+  background: #fff;
+}
+
+.sp-field input:disabled,
+.sp-field textarea:disabled {
+  background: #f5f5f5;
+  color: #555;
+  cursor: default;
+}
