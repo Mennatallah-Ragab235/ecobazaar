@@ -12,12 +12,11 @@ role: { type: String, enum: ["buyer", "seller", "admin"], default: "buyer" },
     // Seller-only fields
     storeName:           { type: String, default: "" },
     storeDescription:    { type: String, default: "" },
-    productCategory:     { type: String, default: "" },
     commercialRegNumber: { type: String, default: "" },
     nationalIdNumber:    { type: String, default: "" },
     taxNumber:           { type: String, default: "" },
     website:             { type: String, default: "" },
-
+    nationalIdImage: { type: String } ,
     isVerified: { type: Boolean, default: false },
     isActive:   { type: Boolean, default: true },
   },

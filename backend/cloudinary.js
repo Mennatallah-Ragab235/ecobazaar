@@ -19,11 +19,11 @@ const storage = new CloudinaryStorage({
   folder: "ecobazaar",
   allowed_formats: ["jpg", "jpeg", "png", "webp"],
   transformation: [{ 
-    width: 400,        // ← صغّر من 600
-    height: 400,       // ← صغّر من 600
+    width: 400,        
+    height: 400,       
     crop: "limit",
-    quality: 50,       // ← خفّف من 70
-    format: "webp",    // ← أسرع format
+    quality: 50,       
+    format: "webp",    
   }],
 },
 });

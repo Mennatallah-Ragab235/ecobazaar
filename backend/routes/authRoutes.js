@@ -71,6 +71,8 @@ router.post("/register/seller", async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+  const { nationalIdImage, ...otherFields } = req.body;
+const user = new User({ ...otherFields, nationalIdImage });
 });
 
 // ── Login ───────────────────────────────────────
