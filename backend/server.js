@@ -1,12 +1,14 @@
+import dotenv from "dotenv";
+dotenv.config();
+
+// ← بعد dotenv.config() مباشرة
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
-import productRoutes from "./routes/productRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
-
+import productRoutes from "./routes/productRoutes.js";
 import User from "./models/User.js";
 import bcrypt from "bcryptjs";
-
 
 
 const initAdmin = async () => {

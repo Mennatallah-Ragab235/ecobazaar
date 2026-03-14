@@ -77,7 +77,7 @@ const handleLogout = () => {
         <div className="nav-links">
           <a href="#contact">اتصل بنا</a>
           <a href="#about">من نحن</a>
-          <a href="#products">المنتجات</a>
+          <a href="#featured-products">المنتجات</a>
         </div>
 
         <div className="nav-actions">

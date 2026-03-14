@@ -17,7 +17,7 @@ import Header from "./components/Admin/Header";
 import Dashboard from "./components/Admin/Dashboard";
 import Aside from "./components/Admin/Aside";
 import SellerProducts from "./pages/Seller/SellerProducts";
-
+import ProductsPage from "./pages/ProductsPage";
 
 
 
@@ -86,7 +86,8 @@ function App() {
           <Route path="/register/seller"   element={<RegisterSeller />} />
           <Route path="/seller/addproduct" element={<AddProduct />} />
           <Route path="/seller/products"   element={<SellerProducts />} />
-          <Route path="/admin"             element={<Admin/>} />
+          <Route path="/admin"             element={<Admin/>} /> 
+          <Route path="/products" element={<ProductsPage />} />
         </Routes>
       </Layout>
     </BrowserRouter>
@@ -94,41 +95,6 @@ function App() {
 }
 
 
-// function Layout({ children, cartCount }) {
-//   const location = useLocation();
 
-//   const isAuth = AUTH_ROUTES.includes(location.pathname);
-// const isSellerOrAdmin = location.pathname.toLowerCase().startsWith("/seller") || location.pathname.toLowerCase().startsWith("/admin");
-
-//   return (
-//     <div className="app" dir="ltr">
-//       {!isAuth && !isSellerOrAdmin && <Navbar cartCount={cartCount} />}
-//       {children}
-//       {!isAuth && !isSellerOrAdmin && <Footer />}
-//     </div>
-//   );
-// }
-
-// function App() {
-//   const [cartCount, setCartCount] = useState(0);
-//   const addToCart = () => setCartCount((c) => c + 1);
-
-//   return (
-//     <BrowserRouter>
-//       <Layout cartCount={cartCount}>
-//         <Routes>
-//           <Route path="/"                  element={<HomePage onAddToCart={addToCart} />} />
-//           <Route path="/login"             element={<Login />} />
-//           <Route path="/register/buyer"    element={<RegisterBuyer />} />
-//           <Route path="/register/seller"   element={<RegisterSeller />} />
-//           <Route path="/seller/addproduct" element={<AddProduct />}/>;
-//           <Route path="/seller/products" element={<SellerProducts />} />
-//           <Route path="/admin"             element={<Admin/>} />
-
-//         </Routes>
-//       </Layout>
-//     </BrowserRouter>
-//   );
-// }
 
 export default App;

@@ -1,4 +1,5 @@
 import express from "express";
+import { upload } from "../cloudinary.js";
 import {
   createProduct,
   getAllProductsAdmin,
@@ -16,8 +17,8 @@ const router = express.Router();
 
 
 // إنشاء منتج جديد (للبائع)
-router.post("/", authMiddleware, createProduct);
-
+// router.post("/", authMiddleware, createProduct);
+router.post("/", authMiddleware, upload.array("images", 6), createProduct);
 // ← specific routes الأول دايماً
 router.get("/admin", authMiddleware, getAllProductsAdmin);
 router.get("/pending", authMiddleware, getPendingProducts);

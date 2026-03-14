@@ -116,37 +116,39 @@ const fileToBase64 = (file) =>
 const handleSubmit = async (e) => {
   e.preventDefault();
   setError("");
+
+  // ← أضف الـ validation ده
+  if (images.length === 0) {
+    setError("يجب رفع صورة واحدة على الأقل للمنتج");
+    return;
+  }
+
   setLoading(true);
 
   try {
-    // ← حوّل كل الصور لـ base64 أولاً
-    const base64Images = await Promise.all(
-      images.map((img) => fileToBase64(img.file))
-    );
+    const formData = new FormData();
 
-    const res = await fetch("http://localhost:5000/api/products", {
+    formData.append("name",         form.name);
+    formData.append("storeName",    form.storeName);
+    formData.append("description",  form.description);
+    formData.append("category",     form.category);
+    formData.append("price",        Number(form.price));
+    formData.append("quantity",     Number(form.quantity));
+    formData.append("weight",       Number(form.weight));
+    formData.append("sku",          form.sku);
+    formData.append("certificates", form.certificates);
+    formData.append("materials",    form.materials);
+    formData.append("origin",       form.origin);
+    formData.append("status",       "pending");
+    selectedFeatures.forEach((f) => formData.append("ecoFeatures[]", f));
+
+    // ← الصور كملفات حقيقية
+    images.forEach((img) => formData.append("images", img.file));
+
+const res = await fetch("/api/products", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        name:         form.name,
-        storeName:    form.storeName || user?.storeName || "",
-        description:  form.description,
-        category:     form.category,
-        price:        Number(form.price),
-        quantity:     Number(form.quantity),
-        weight:       Number(form.weight),
-        sku:          form.sku,
-        certificates: form.certificates,
-        materials:    form.materials,
-        origin:       form.origin,
-        ecoFeatures:  selectedFeatures,
-        images:       base64Images,       // ← base64 حقيقي
-        image:        base64Images[0] || "",
-        status:       "pending",
-      }),
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData,
     });
 
     const data = await res.json();
@@ -155,7 +157,11 @@ const handleSubmit = async (e) => {
     setSubmitted(true);
     setTimeout(() => {
       setSubmitted(false);
-      setForm({ name: "", storeName: "", description: "", category: "", price: "", quantity: "0", sku: "", certificates: "", materials: "", origin: "", weight: "0.0" });
+      setForm({
+        name: "", storeName: "", description: "", category: "",
+        price: "", quantity: "0", sku: "",
+        certificates: "", materials: "", origin: "", weight: "0.0",
+      });
       setSelectedFeatures([]);
       setImages([]);
     }, 3000);
@@ -166,8 +172,6 @@ const handleSubmit = async (e) => {
     setLoading(false);
   }
 };
-
-
 
 
 const handleLogout = () => {
@@ -387,9 +391,10 @@ const handleLogout = () => {
             {/* 2: صور المنتج */}
             <div className="ap-form-card">
               <div className="ap-section-header">
-                <h2 className="ap-section-title">صور المنتج</h2>
-                <span className="ap-badge orange">موصى به</span>
-              </div>
+                <h2 className="ap-section-title">صور المنتج </h2>
+                                <span className="ap-badge green">مطلوب</span>
+
+<span className="ap-required">*</span>              </div>
               <div className="ap-image-tips">
                 <strong>نصائح لصور احترافية</strong>
                 <ul>

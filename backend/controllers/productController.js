@@ -1,13 +1,18 @@
 import Product from "../models/product.js";
-
-// إنشاء منتج جديد
 export const createProduct = async (req, res) => {
   try {
+    // الصور بتيجي من Cloudinary
+    const images = req.files ? req.files.map((f) => f.path) : [];
+    const image  = images[0] || "";
+
     const product = new Product({
       ...req.body,
       seller: req.user._id,
-      status: "pending", 
+      status: "pending",
+      images,
+      image,
     });
+
     await product.save();
     res.status(201).json({
       message: "تم إضافة المنتج بنجاح وهو الآن في انتظار الموافقة",
@@ -17,7 +22,6 @@ export const createProduct = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
-
 
 export const getAllProductsAdmin = async (req, res) => {
   try {

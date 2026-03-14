@@ -21,6 +21,77 @@ function StarRating({ rating }) {
   );
 }
 
+function ProductCard({ product, onAddToCart, animationDelay }) {
+  const [imgError, setImgError] = useState(false);
+
+  const img     = product.image || product.images?.[0] || "";
+  const price   = parseFloat(product.price || 0);
+  const oldPrice= parseFloat(product.originalPrice || 0);
+  const rating  = parseFloat(product.rating || 0);
+  const reviews = parseInt(product.numReviews || product.reviews || 0);
+  const brand   = product.brand || product.storeName || product.sellerName ||
+                  (product.seller && product.seller.storeName) || "";
+  const hasDiscount = oldPrice && oldPrice > price;
+
+  return (
+    <div className="product-card" style={{ animationDelay }}>
+      {/* IMAGE */}
+      <div className="product-image-wrap">
+        {img && !imgError ? (
+          <img
+            src={img}
+            alt={product.name}
+            onError={() => setImgError(true)}
+          />
+        ) : (
+          <div className="product-img-placeholder">🌿</div>
+        )}
+        <div className="product-badges">
+          {product.isEcoFriendly && <span className="badge eco">🌿 صديق للبيئة</span>}
+          {hasDiscount && <span className="badge discount">خصم</span>}
+        </div>
+      </div>
+
+      {/* INFO */}
+      <div className="product-info">
+        <h3 className="product-name">{product.name}</h3>
+
+        {brand && (
+          <div className="product-brand">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="12" height="12">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+              <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+            {brand}
+          </div>
+        )}
+
+        <div className="product-rating">
+          <StarRating rating={rating} />
+          <span className="rating-val">{rating > 0 ? rating.toFixed(1) : "0"}</span>
+          <span className="rating-count">({reviews} تقييم)</span>
+        </div>
+
+        <div className="product-price-row">
+          <div className="product-prices">
+            <span className="price-current">{price.toLocaleString("ar-EG")} جنيه</span>
+            {hasDiscount && (
+              <span className="price-original">{oldPrice.toLocaleString("ar-EG")} جنيه</span>
+            )}
+          </div>
+          <button className="add-to-cart" onClick={() => onAddToCart(product)}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18">
+              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <path d="M16 10a4 4 0 0 1-8 0"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function FeaturedProducts({ onAddToCart, searchVal }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -61,37 +132,12 @@ export default function FeaturedProducts({ onAddToCart, searchVal }) {
         ) : (
           <div className="products-grid">
             {filteredProducts.map((product, i) => (
-              <div className="product-card" key={product._id} style={{ animationDelay: `${i * 0.1}s` }}>
-                <div className="product-image-wrap">
-                  <img
-                    src={product.image || product.images?.[0] || "https://placehold.co/300x300?text=No+Image"}
-                    alt={product.name}
-                  />
-                  {product.isEcoFriendly && <span className="badge eco">صديق للبيئة</span>}
-                  {product.discount > 0 && <span className="badge discount">خصم</span>}
-                </div>
-                <div className="product-info">
-                  <h3 className="product-name">{product.name}</h3>
-                  <div className="product-rating">
-                    <StarRating rating={product.rating || 0} />
-                    <span className="rating-val">{product.rating || "0"}</span>
-                    <span className="rating-count">(تقييم {product.reviews || 0})</span>
-                  </div>
-                  <div className="product-price-row">
-                    <div className="product-prices">
-                      <span className="price-current">جنيه {product.price}</span>
-                      {product.originalPrice && <span className="price-original">جنيه {product.originalPrice}</span>}
-                    </div>
-                    <button className="add-to-cart" onClick={() => onAddToCart(product)}>
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18">
-                        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
-                        <line x1="3" y1="6" x2="21" y2="6"/>
-                        <path d="M16 10a4 4 0 0 1-8 0"/>
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              </div>
+              <ProductCard
+                key={product._id}
+                product={product}
+                onAddToCart={onAddToCart}
+                animationDelay={`${i * 0.1}s`}
+              />
             ))}
           </div>
         )}

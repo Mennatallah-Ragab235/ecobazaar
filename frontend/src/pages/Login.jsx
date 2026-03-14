@@ -87,6 +87,7 @@ if (data.user.role === "seller") {
               value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
               dir="ltr"
+
             />
           </div>
 

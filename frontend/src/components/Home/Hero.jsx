@@ -11,7 +11,7 @@ export default function Hero() {
           اكتشف مجموعة واسعة من المنتجات المستدامة من بائعين محليين موثوقين. معاً نبني مستقبلاً أخضر.
         </p>
         <div className="hero-actions">
-        <a href="#featured-products" class="btn-primary">تصفح المنتجات</a>
+        <a href="#featured-products" className="btn-primary">تصفح المنتجات</a>
           <a href="#join-section" className="btn-secondary">انضم إلينا</a>
         </div>
       </div>

@@ -1,10 +1,12 @@
 // backend/routes/authRoutes.js
+import dotenv from "dotenv";
+dotenv.config(); 
 import express from "express";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 
 const router = express.Router();
-const JWT_SECRET = process.env.JWT_SECRET || "ecobazaar_secret_key";
+const JWT_SECRET = process.env.JWT_SECRET;
 
 const signToken = (user) =>
   jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: "7d" });
