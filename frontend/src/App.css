@@ -1,0 +1,87 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Tajawal:wght@400;500;700;800&display=swap');
+
+:root {
+  --green-primary: #2d7a3a;
+  --green-dark: #1e5c2a;
+  --green-light: #e8f5e9;
+  --green-accent: #4caf50;
+  --green-bg: #f0f7f0;
+  --yellow-bg: #f9f7e8;
+  --text-dark: #1a1a1a;
+  --text-medium: #444;
+  --text-light: #777;
+  --white: #ffffff;
+  --border: #e0e0e0;
+  --shadow: 0 4px 20px rgba(0,0,0,0.08);
+  --radius: 16px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  font-family: 'Cairo', 'Tajawal', sans-serif;
+  color: var(--text-dark);
+  direction: rtl;
+  background: var(--white);
+}
+
+.app {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column; /* مهم جدًا */
+}
+
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+img {
+  max-width: 100%;
+}
+
+/* App.css أو Admin.css */
+.admin-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+}
+
+.admin-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  width: 100%;
+
+}
+
+.admin-body aside {
+  width: 250px; /* حجم الـ Sidebar */
+  background-color: #f4f4f4; 
+  border-right: 1px solid #ccc;
+}
+
+.admin-body main {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+    width: 100%;
+
+}

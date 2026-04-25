@@ -1,0 +1,119 @@
+.join-section {
+  padding: 80px 0;
+  background: var(--white);
+}
+
+.join-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.join-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 40px;
+  text-align: center;
+  transition: all 0.25s ease;
+}
+
+.join-card:hover {
+  border-color: var(--green-primary);
+  box-shadow: 0 12px 40px rgba(45,122,58,0.12);
+  transform: translateY(-4px);
+}
+
+.join-icon {
+  width: 64px;
+  height: 64px;
+  background: var(--green-light);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+}
+
+.join-icon svg {
+  width: 28px;
+  height: 28px;
+  color: var(--green-primary);
+}
+
+.join-card h3 {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-dark);
+  margin-bottom: 10px;
+}
+
+.join-card p {
+  font-size: 14px;
+  color: var(--text-light);
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+
+.join-features {
+  list-style: none;
+  text-align: right;
+  margin-bottom: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.join-features li {
+  font-size: 14px;
+  color: var(--text-medium);
+}
+
+.btn-join {
+  width: 100%;
+  background: var(--green-primary);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 24px;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.btn-join:hover {
+  background: var(--green-dark);
+  transform: translateY(-2px);
+}
+
+.already-have-account {
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--text-light);
+  text-align: center;
+  width: 30%;
+  background: var(--green-primary);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 24px;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: inherit;
+  transition: all 0.2s;
+    cursor: pointer;
+    justify-content:space-evenly;
+
+}
+
+.already-have-account span {
+  color: white;
+  font-weight: 600;
+  transition: color 0.2s;
+    text-align: center;
+
+}
+
