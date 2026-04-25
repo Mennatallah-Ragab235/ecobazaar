@@ -1,12 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import "../assets/ProductDetails.css";
-import { getFinalRating, getReviewsCount } from "../utils/rating";
-
-
 
 function FieldRow({ label, value }) {
-  
   if (!value) return null;
 
   return (
@@ -24,9 +20,8 @@ const optionalFields = [
   { label: "SKU", key: "sku" },
 ];
 
-
 /* ⭐ STAR DISPLAY */
-function StarRating({ rating }) {
+function StarRating({ rating = 0 }) {
   return (
     <div className="stars">
       {[1, 2, 3, 4, 5].map((s) => (
@@ -69,16 +64,28 @@ export default function ProductDetailsPage() {
 
   /* 🔥 GET PRODUCT */
   useEffect(() => {
-    fetch(`http://localhost:5000/api/products/${id}`)
-      .then((res) => res.json())
-      .then((data) => setProduct(data))
-      .catch((err) => console.log(err))
-      .finally(() => setLoading(false));
+    const fetchProduct = async () => {
+      try {
+        const res = await fetch(
+          `http://localhost:5000/api/products/${id}`
+        );
+        const data = await res.json();
+
+        setProduct(data || null);
+      } catch (err) {
+        console.log(err);
+        setProduct(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
   }, [id]);
 
-  /* ⭐ FINAL RATING */
- const rating = product.rating || 0;
-const reviews = product.numReviews || 0;
+  /* ⭐ SAFE VALUES */
+  const rating = product?.rating ?? 0;
+  const reviews = product?.numReviews ?? 0;
 
   /* 🔥 SUBMIT RATING */
   const submitRating = async () => {
@@ -106,8 +113,8 @@ const reviews = product.numReviews || 0;
 
       setProduct((prev) => ({
         ...prev,
-        rating: data.product.rating,
-        ratings: data.product.ratings,
+        rating: data?.product?.rating ?? 0,
+        ratings: data?.product?.ratings ?? [],
       }));
 
       alert("تم إرسال التقييم");
@@ -117,29 +124,33 @@ const reviews = product.numReviews || 0;
     }
   };
 
+  /* 🔥 LOADING */
   if (loading) return <div className="loading">جاري التحميل...</div>;
+
+  /* 🔥 NO PRODUCT */
   if (!product) return <div>المنتج غير موجود</div>;
 
   return (
     <div className="product-details-container">
       <button className="view-all-btn" onClick={() => navigate("/products")}>
-        رجوع 
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg></button>
+        رجوع
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <path d="M5 12h14M12 5l7 7-7 7" />
+        </svg>
+      </button>
 
       <div className="product-details-card">
         {/* IMAGE */}
         <div className="image-section">
           <img
-            src={product.image || product.images?.[0]}
-            alt={product.name}
+            src={product?.image || product?.images?.[0]}
+            alt={product?.name}
           />
         </div>
 
         {/* INFO */}
         <div className="info-section">
-          <h1>{product.name}</h1>
+          <h1>{product?.name}</h1>
 
           {/* ⭐ RATING */}
           <div className="rating-box">
@@ -149,27 +160,26 @@ const reviews = product.numReviews || 0;
             </span>
           </div>
 
-          <p className="desc">{product.description}</p>
+          <p className="desc">{product?.description}</p>
 
-          <h2 className="price">{product.price} جنيه</h2>
+          <h2 className="price">{product?.price} جنيه</h2>
 
-         <div className="extra">
-  <FieldRow label="الفئة" value={product.category} />
-  <FieldRow label="البائع" value={product.seller?.storeName} />
+          <div className="extra">
+            <FieldRow label="الفئة" value={product?.category} />
+            <FieldRow label="البائع" value={product?.seller?.storeName} />
 
-  {optionalFields.map((f) => (
-    <FieldRow
-      key={f.key}
-      label={f.label}
-      value={product[f.key]}
-    />
-  ))}
+            {optionalFields.map((f) => (
+              <FieldRow
+                key={f.key}
+                label={f.label}
+                value={product?.[f.key]}
+              />
+            ))}
 
-  {product.isEcoFriendly && (
-    <p className="eco">🌿 صديق للبيئة</p>
-  )}
-</div>
-
+            {product?.isEcoFriendly && (
+              <p className="eco">🌿 صديق للبيئة</p>
+            )}
+          </div>
 
           <hr />
 
