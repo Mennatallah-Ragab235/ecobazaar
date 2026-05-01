@@ -2,6 +2,17 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import "../assets/ProductsPage.css";
 import { CATEGORY_VALUES } from "../components/Home/Categories";
+import { useSearchParams } from "react-router-dom";
+
+
+function normalizeText(text = "") {
+  return text
+    .toLowerCase()
+    .replace(/[أإآا]/g, "ا")
+    .replace(/ى/g, "ي")
+    .replace(/ة/g, "ه")
+    .trim();
+}
 
 const CATEGORIES = CATEGORY_VALUES;
 
@@ -157,12 +168,12 @@ function ProductCard({ product, onAddToCart, wishlistIds, onToggleWishlist }) {
   );
 }
 
-export default function ProductsPage({ onAddToCart }) {
+export default function ProductsPage({ onAddToCart, searchVal }) {
   const [allProducts, setAllProducts] = useState([]);
   const [filtered, setFiltered]       = useState([]);
   const [loading, setLoading]         = useState(true);
   const [error, setError]             = useState("");
-  const [search, setSearch]           = useState("");
+  // const [search, setSearch]           = useState("");
   const [maxPrice, setMaxPrice]       = useState(1000);
   const [minRating, setMinRating]     = useState(0);
   const [ecoOnly, setEcoOnly]         = useState(false);
@@ -171,6 +182,12 @@ export default function ProductsPage({ onAddToCart }) {
   const [wishlistIds, setWishlistIds] = useState(new Set());
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
+
+ 
+
+
+
+
 
   const CATS = ["العناية الشخصية", "المنزل والحديقة", "الأزياء المستدامة", "الأطعمة العضوية"];
 
@@ -216,14 +233,25 @@ export default function ProductsPage({ onAddToCart }) {
 
   const applyFilters = useCallback(() => {
     let result = [...allProducts];
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      result = result.filter(p => {
-        const n = (getField(p, "name", "title") || "").toLowerCase();
-        const c = formatCategory(getField(p, "category") || "");
-        return n.includes(q) || c.includes(q);
-      });
-    }
+if (searchVal?.trim()) {
+  const q = normalizeText(searchVal);
+
+  result = result.filter(p => {
+  const name = normalizeText(getField(p, "name", "title"));
+const category = normalizeText(getField(p, "category"));
+const brand = normalizeText(p.brand || p.storeName || "");
+const desc = normalizeText(p.description || "");
+
+    return (
+      name.includes(q) ||
+      category.includes(q) ||
+      brand.includes(q) ||
+      desc.includes(q)
+    );
+  });
+}
+
+
     result = result.filter(p => parseFloat(getField(p, "price") || 0) <= maxPrice);
     result = result.filter(p => getFinalRating(p) >= minRating);
     if (ecoOnly) result = result.filter(p => p.isEco || p.eco || p.isEcoFriendly);
@@ -233,7 +261,7 @@ export default function ProductsPage({ onAddToCart }) {
     else if (sort === "price_desc") result.sort((a, b) => parseFloat(b.price||0) - parseFloat(a.price||0));
     else if (sort === "rating") result.sort((a, b) => getFinalRating(b) - getFinalRating(a));
     setFiltered(result);
-  }, [allProducts, search, maxPrice, minRating, ecoOnly, selectedCats, sort]);
+  }, [allProducts, searchVal, maxPrice, minRating, ecoOnly, selectedCats, sort]);
 
   useEffect(() => { applyFilters(); }, [applyFilters]);
 

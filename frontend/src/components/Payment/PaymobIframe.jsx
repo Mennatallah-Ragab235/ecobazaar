@@ -10,7 +10,6 @@ useEffect(() => {
 
     console.log("🔥 Paymob Event:", data);
 
-    // ✅ تحقق أوسع
     const success =
       data?.success === true ||
       data?.obj?.success === true ||
@@ -20,18 +19,17 @@ useEffect(() => {
 
     if (success) {
       console.log("✅ SUCCESS DETECTED");
-
-      // 🔥 أهم سطر
       onSuccess?.();
     }
   };
 
- 
+  // ✅ لازم تضيفي event listener
+  window.addEventListener("message", handleMessage);
+
   return () => {
     window.removeEventListener("message", handleMessage);
   };
 }, [onSuccess]);
-
   return (
     <div className="paymob-wrapper">
       <div className="paymob-header">

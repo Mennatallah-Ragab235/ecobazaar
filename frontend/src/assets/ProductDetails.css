@@ -133,34 +133,301 @@
 
 /* ===================== RATE BOX ===================== */
 .rate-box {
-  margin-top: 20px;
-  padding: 15px;
-  border: 1px solid #eee;
-  border-radius: 12px;
-  background: #fafafa;
+  margin-top: 25px;
+  padding: 18px 20px;
+
+  background: #ffffff;
+  border: 1px solid #eef0f2;
+  border-radius: 16px;
+
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
   direction: rtl;
+}
+
+/* ===================== TITLE ===================== */
+.rate-box h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #111;
+}
+
+/* ===================== TEXTAREA ===================== */
+.review-textarea {
+  width: 100%;
+  resize: none;
+
+  padding: 12px 14px;
+  border-radius: 12px;
+
+  border: 1px solid #e5e7eb;
+  outline: none;
+
+  font-size: 14px;
+  font-family: inherit;
+
+  transition: all 0.2s ease;
+
+  background: #fafafa;
+}
+
+.review-textarea:focus {
+  border-color: #16a34a;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
 }
 
 /* ===================== BUTTON ===================== */
 .rate-btn {
-  margin-top: 10px;
-  padding: 10px 15px;
-  background: #16a34a;
-  color: white;
-  border: none;
+  align-self: flex-start;
+
+  padding: 10px 16px;
   border-radius: 10px;
+
+  border: none;
   cursor: pointer;
-  transition: 0.2s ease;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  background: #16a34a;
+  color: #fff;
+
+  transition: all 0.25s ease;
+
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.2);
 }
 
 .rate-btn:hover {
   background: #15803d;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
+
+/* ===================== DISABLED ===================== */
+.rate-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ===================== MESSAGE ===================== */
+.action-msg {
+  font-size: 13px;
+  margin: 0;
+  color: #444;
+}
+
+
 
 /* ===================== LOADING ===================== */
 .loading {
   text-align: center;
   padding: 50px;
   font-size: 18px;
+}
+
+/* ===================== REVIEWS SECTION ===================== */
+/* ===================== REVIEWS SECTION ===================== */
+.reviews-section {
+  margin-top: 25px;
+  background: #fff;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+
+  display: block; /* مهم */
+}
+
+/* ===================== SINGLE REVIEW ===================== */
+.review-item {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end; /* خلي المحتوى يمين */
+  text-align: right;
+
+  padding: 12px 10px;
+  direction: rtl; /* أهم سطر */
+}
+.review-item:hover {
+  transform: translateY(-2px);
+}
+
+/* ===================== HEADER ===================== */
+.review-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  direction: rtl;
+}
+
+/* ===================== USER ICON ===================== */
+.review-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #16a34a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 16px;
+}
+
+/* ===================== NAME ===================== */
+.review-user-name {
+  font-weight: 700;
+  font-size: 14px;
+  color: #111;
+}
+
+/* ===================== DATE ===================== */
+.review-date {
+  font-size: 12px;
+  color: #999;
+}
+
+/* ===================== COMMENT ===================== */
+.review-comment {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #444;
+  line-height: 1.7;
+  width: 100%;
+  padding-right: 48px; /* يخلي التعليق تحت الاسم */
+}
+
+/* ===================== DIVIDER ===================== */
+.review-divider {
+  height: 1px;
+  background: #eee;
+  margin: 12px 0;
+  width: 100%;
+}
+
+/* ===================== ACTION BUTTONS ===================== */
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 15px;
+  flex-wrap: wrap;
+}
+
+/* ===================== PRODUCT DETAILS CART BUTTON ===================== */
+.pd-cart-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  padding: 10px 14px;
+  border-radius: 12px;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+  transition: all 0.25s ease;
+
+  background: #16a34a;
+  color: #fff;
+
+  border: none;
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25);
+}
+
+.pd-cart-btn:hover {
+  background: #15803d;
+  transform: translateY(-2px);
+}
+
+/* ===================== PRODUCT DETAILS WISHLIST BUTTON ===================== */
+.pd-wishlist-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  padding: 10px 14px;
+  border-radius: 12px;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+  transition: all 0.25s ease;
+
+  background: #fff;
+  color: #333;
+
+  border: 1px solid #e5e7eb;
+}
+
+.pd-wishlist-btn:hover {
+  background: #f9fafb;
+  transform: translateY(-2px);
+}
+
+/* ===================== ACTIVE WISHLIST ===================== */
+.pd-wishlist-btn.active {
+  border-color: #e74c3c;
+  color: #e74c3c;
+  background: #fff5f5;
+}
+
+.review-stars {
+  display: flex;
+  gap: 3px;
+  margin-bottom: 6px;
+}
+
+.review-stars span {
+  font-size: 16px;
+  color: #d1d5db;
+}
+
+.review-stars .filled {
+  color: #f59e0b;
+}
+
+.show-more-btn {
+  margin: 15px auto 0;
+  display: block;
+  background: transparent;
+  border: 1px solid #16a34a;
+  color: #16a34a;
+  padding: 10px 18px;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  width: fit-content;
+}
+
+/* hover */
+.show-more-btn:hover {
+  background: #16a34a;
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(22, 163, 74, 0.25);
+}
+
+/* عند الضغط */
+.show-more-btn:active {
+  transform: scale(0.97);
+}
+
+/* شكل بسيط على الموبايل */
+@media (max-width: 600px) {
+  .show-more-btn {
+    width: 100%;
+    text-align: center;
+  }
 }

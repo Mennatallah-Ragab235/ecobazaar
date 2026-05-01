@@ -18,64 +18,9 @@
 }
 
 
-/* الصفحة كاملة */
-.ap-page {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  width: 100%;
-}
 
-/* Navbar فوق */
-.ap-navbar {
-  height: 80px;
-  flex-shrink: 0;
-  background: #f3f5f4;
-  border-bottom: 1px solid #e0e0e0;
-  display: flex;
-  align-items: center;
-  padding: 0 30px;
-  justify-content: space-between;
-}
 
-.ap-navbar-left{
-    display: flex;
-     padding-right: 10px;
-  margin-left: 0px;
  
-}
-
-
-.ap-navbar-right{
-    display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  padding-right: 10px;
-  margin-left: 2px;
-}
-
-/* الجزء اللي فيه sidebar + main */
-.ap-body {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-}
-
-/* الـ Sidebar */
-.ap-sidebar {
-  width: 240px;
-  background: #ffffff;
-  border-right: 1px solid #e5e5e5;
-  padding: 20px;
-}
-
-/* الـ Main */
-.ap-main {
-  flex: 1;
-  padding: 30px;
-  overflow-y: auto;
-  background: #fafafa;
-}
 
 .ap-logo {
   display: flex;

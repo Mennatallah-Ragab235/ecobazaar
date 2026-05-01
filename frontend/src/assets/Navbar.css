@@ -100,7 +100,7 @@
   gap: 8px;
 }
 
-.nav-btn {
+.nav-btnH{
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -113,12 +113,12 @@
   transition: all 0.2s;
 }
 
-.nav-btn:hover {
+.nav-btnH:hover{
   background: var(--green-light);
   border-color: var(--green-primary);
 }
 
-.nav-btn svg {
+.nav-btnH svg{
   width: 20px;
   height: 20px;
   stroke: currentColor;
@@ -126,7 +126,7 @@
   color: var(--text-medium);
 }
 
-.nav-btn:hover svg {
+.nav-btnH:hover svg{
   color: var(--green-primary);
 }
 

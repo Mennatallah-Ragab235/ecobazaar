@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "../assets/Checkout.css";
 import PaymobPayment from '../components/Payment/PaymobPayment';
 
-function Checkout() {
-  const navigate = useNavigate();
+
+function Checkout({ refreshCart, setCartCount }) { 
+    const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
   const [cart, setCart] = useState({ items: [] });
@@ -23,6 +24,7 @@ function Checkout() {
   const [showPaymob, setShowPaymob] = useState(false);
   const [orderId, setOrderId] = useState("");
   const [userEmail, setUserEmail] = useState("");
+const orderCreatedRef = useRef(false); // 👈 هنا بالظبط
 
   useEffect(() => {
     fetch("/api/auth/profile", {
@@ -54,11 +56,14 @@ function Checkout() {
       .finally(() => setLoadingCart(false));
   }, [token, navigate]);
 
-  const shippingPrice = shipping === "standard" ? 30 : 60;
-  const subtotal = cart.items.reduce((acc, item) => {
-    return acc + parseFloat(item.product?.price || 0) * item.quantity;
-  }, 0);
-  const total = subtotal + shippingPrice;
+ const shippingPrice = shipping === "standard" ? 30 : 60;
+
+const subtotal = cart.items.reduce((acc, item) => {
+  return acc + Number(item.product?.price || 0) * item.quantity;
+}, 0);
+
+// 🔥 fix floating point
+const total = Number((subtotal + shippingPrice).toFixed(2));
 
   // ✅ validate الحقول المطلوبة
   const validateForm = () => {
@@ -84,11 +89,12 @@ function Checkout() {
   const createOrder = async () => {
     try {
       const orderData = {
-        items: cart.items.map((item) => ({
-          product: item.product._id,
-          quantity: item.quantity,
-          price: item.product.price,
-        })),
+     items: cart.items.map((item) => ({
+  product: item.product._id,
+  seller: item.product.seller,   // 🔥 ده المفتاح
+  quantity: item.quantity,
+  price: item.product.price,
+})),
         shippingAddress: {
           fullName: `${firstName} ${lastName}`,
           phone,
@@ -121,7 +127,15 @@ function Checkout() {
     }
   };
 
- const handlePaymentSuccess = async () => {
+
+const [paymentDone, setPaymentDone] = useState(false);
+
+
+
+const handlePaymentSuccess = async () => {
+  if (paymentDone) return;
+  setPaymentDone(true);
+
   try {
     await fetch(`/api/orders/${orderId}/pay`, {
       method: "PATCH",
@@ -129,64 +143,75 @@ function Checkout() {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ status: "paid" }),
     });
 
     await fetch("/api/cart/clear", {
       method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
 
-    setShowPaymob(false);
+    setCartCount(0);
+    await refreshCart();
 
     navigate("/order-success", {
       state: { orderId },
     });
 
   } catch (err) {
-    setError("❌ خطأ في تأكيد الدفع");
+    console.error(err);
   }
 };
+
+ 
 
 
 
 
   
 const handleConfirm = async () => {
-  setError("");
-
-  if (submitting) return;
-  if (!validateForm()) return;
+  if (orderCreatedRef.current || submitting) return;
 
   setSubmitting(true);
+  setError("");
+
+  if (!validateForm()) {
+    setSubmitting(false);
+    return;
+  }
 
   try {
     const newOrderId = await createOrder();
 
     if (!newOrderId) {
-      setError("فشل إنشاء الطلب، حاول مرة أخرى");
+      setError("فشل إنشاء الطلب");
+      setSubmitting(false);
       return;
     }
 
-    if (payment === "card") {
-      setOrderId(newOrderId);
-      setShowPaymob(true); // مباشرة بدون timeout
-    } else {
-      await fetch("/api/cart/clear", {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+    // 🚨 خزّن الـ order id فورًا
+    setOrderId(newOrderId);
 
-      navigate("/order-success", {
-        state: { orderId: newOrderId },
-      });
+    if (payment === "card") {
+      // 👇 مهم جدًا: خلي الفتح بعد ما state تتحدث
+      setTimeout(() => {
+        setShowPaymob(true);
+      }, 0);
+
+      return; // ❗ متعملش redirect
     }
 
+    // COD فقط
+    navigate("/order-success", {
+      state: { orderId: newOrderId },
+    });
+
   } catch (err) {
-    console.error(err);
-    setError("حدث خطأ غير متوقع");
+    setError("خطأ");
   } finally {
     setSubmitting(false);
+    orderCreatedRef.current = true;
   }
 };
 
@@ -388,12 +413,15 @@ const handleConfirm = async () => {
               {/* ✅ زرار موحد أو Paymob widget */}
 {showPaymob && orderId ? (
   <div className="paymob-section">
-    <PaymobPayment
-      amount={total}
-      orderId={orderId}
-      customerData={customerData}
-      onSuccess={handlePaymentSuccess}
-    />
+        {console.log("🎯 SHOWING PAYMOB - orderId:", orderId, "amount:", total)}
+
+  <PaymobPayment
+  amount={total}
+  orderId={orderId}
+  customerData={customerData}
+  items={cart.items}   // 🔥 دي أهم حاجة
+  onSuccess={handlePaymentSuccess}
+/>
 
     <button
       type="button"

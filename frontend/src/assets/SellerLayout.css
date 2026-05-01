@@ -1,0 +1,302 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap');
+
+/* ===== GLOBAL RESET ===== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Cairo', sans-serif;
+  background: #f1f5f1;
+  direction: rtl;
+}
+
+/* =====================================================
+   LAYOUT ROOT
+   seller-layout → flex column تاخد 100vh كاملة
+   ===================================================== */
+.seller-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* =====================================================
+   NAVBAR  →  .ap-navbar  (الـ class اللي في SellerNavbar.jsx)
+   ===================================================== */
+.ap-navbar {
+  height: 64px;
+  flex-shrink: 0;
+  background: #fff;
+  border-bottom: 1px solid #e5ece6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  z-index: 100;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+.ap-navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ap-logo-icon { font-size: 26px; }
+
+.ap-logo-name {
+  font-size: 16px;
+  font-weight: 800;
+  color: #2d7a4f;
+  line-height: 1.2;
+}
+
+.ap-logo-sub {
+  font-size: 11px;
+  color: #8a9e8d;
+}
+
+.ap-navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.profile-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-btn.user-btn {
+  background: #f0faf4;
+  border: 1px solid #b8ddc8;
+  color: #2d7a4f;
+  padding: 7px 16px;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.nav-btn.user-btn:hover { background: #d9f0e5; }
+
+.logout-btn {
+  background: transparent;
+  border: 1px solid #e0e0e0;
+  color: #e74c3c;
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.logout-btn:hover {
+  background: #fff5f5;
+  border-color: #e74c3c;
+}
+
+/* =====================================================
+   BODY AREA  →  sidebar + content جنب بعض
+   ===================================================== */
+.seller-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;        /* مهم جداً عشان flex child يتمدد صح */
+  overflow: hidden;
+  /* RTL: السايدبار على اليمين تلقائياً */
+}
+
+/* =====================================================
+   SIDEBAR  →  .SellerSidebar  (الـ class اللي في SellerSidebar.jsx)
+   ===================================================== */
+.SellerSidebar {
+  width: 230px;
+  min-width: 230px;     /* يمنع تضييق السايدبار */
+  flex-shrink: 0;
+  background: #fff;
+  border-left: 1px solid #e5ece6;   /* RTL → الحد على اليسار */
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 16px 0;
+}
+
+/* =====================================================
+   SIDEBAR NAV ITEMS
+   ===================================================== */
+.ap-nav {
+  flex: 1;
+  padding: 8px 0;
+}
+
+.ap-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: #6b7c72;
+  border-right: 3px solid transparent;
+  transition: all 0.18s;
+  user-select: none;
+}
+
+.ap-nav-item:hover {
+  background: #f0faf4;
+  color: #2d7a4f;
+}
+
+.ap-nav-item.active {
+  background: #f0faf4;
+  color: #2d7a4f;
+  font-weight: 800;
+  border-right: 3px solid #2d7a4f;
+}
+
+.ap-nav-icon {
+  font-size: 17px;
+  width: 24px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+#ap-nav-logout {
+  padding: 12px 20px;
+  color: #e74c3c;
+  cursor: pointer;
+  font-size: 13.5px;
+  font-weight: 600;
+  transition: all 0.2s;
+  border-top: 1px solid #f0f0f0;
+  margin-top: 8px;
+}
+
+#ap-nav-logout:hover {
+  background: #fff5f5;
+  opacity: 0.9;
+}
+
+/* =====================================================
+   MAIN CONTENT  →  .seller-content
+   ===================================================== */
+.seller-content {
+  flex: 1;
+  min-width: 0;         /* يمنع overflow */
+  overflow-y: auto;
+  padding: 24px;
+  background: #f1f5f1;
+}
+
+/* =====================================================
+   MODAL SHARED
+   ===================================================== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 14px;
+  padding: 28px 32px;
+  width: 420px;
+  max-width: 92vw;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  animation: slideUp 0.2s ease;
+}
+
+.modal h3 {
+  font-size: 18px;
+  font-weight: 800;
+  color: #1a2e1f;
+  margin-bottom: 20px;
+}
+
+.modal button {
+  padding: 9px 20px;
+  border-radius: 8px;
+  border: none;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-left: 10px;
+  transition: 0.2s;
+}
+
+/* =====================================================
+   TOAST
+   ===================================================== */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  background: #fff;
+  border: 1px solid #b8ddc8;
+  border-right: 4px solid #2d7a4f;
+  padding: 14px 18px;
+  border-radius: 10px;
+  z-index: 1100;
+  min-width: 240px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  animation: slideUp 0.25s ease;
+}
+
+.toast strong {
+  display: block;
+  color: #2d7a4f;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.toast p {
+  font-size: 13px;
+  color: #555;
+}
+
+/* =====================================================
+   ANIMATIONS
+   ===================================================== */
+@keyframes slideUp {
+  from { transform: translateY(16px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+/* =====================================================
+   RESPONSIVE
+   ===================================================== */
+@media (max-width: 768px) {
+  .SellerSidebar {
+    width: 190px;
+    min-width: 190px;
+  }
+
+  .seller-content {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 520px) {
+  .SellerSidebar {
+    display: none;   /* اخفي السايدبار على موبايل صغير */
+  }
+}

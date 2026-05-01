@@ -4,6 +4,8 @@ import "../../assets/AddProduct.css";
 import "../../assets/Auth.css";
 import "../../assets/Navbar.css";
 import { CATEGORIES } from "../../components/Home/Categories";
+import SellerLayout from "../../components/Seller/SellerLayout";
+import "../../assets/SellerLayout.css";
 
 const ecoFeatures = [
   { id: "recyclable",    label: "قابل لإعادة التدوير" },
@@ -24,12 +26,7 @@ const checklist = [
   "تم اختيار الميزات البيئية المناسبة",
 ];
 
-const navItems = [
-  { icon: "📦", label: "المنتجات", path: "/seller/products", active: false },
-  { icon: "🛒", label: "الطلبات",  path: "" },
-  { icon: "💰", label: "الإيرادات", path: "" },
-  { icon: "⚙️", label: "الإعدادات", path: "" },
-];
+
 
 export default function AddProduct() {
   const navigate = useNavigate();
@@ -182,89 +179,7 @@ export default function AddProduct() {
   };
 
   return (
-    <div className="ap-page">
-
-      {/* ── Navbar ── */}
-      <div className="ap-navbar">
-        <div className="ap-navbar-left">
-          <span className="ap-logo-icon">🌿</span>
-          <div>
-            <div className="ap-logo-name">EcoBazaar</div>
-            <div className="ap-logo-sub">لوحة البائع</div>
-          </div>
-        </div>
-
-        <div className="ap-navbar-right">
-          <div className="profile-wrapper" ref={dropdownRef}>
-            <button className="nav-btn user-btn" onClick={handleProfileClick}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                <circle cx="12" cy="7" r="4"/>
-              </svg>
-            </button>
-
-            {dropdownOpen && user && (
-              <div className="profile-dropdown">
-                <div className="dropdown-user-info">
-                  <div className="dropdown-avatar">
-                    {user.fullName?.charAt(0)?.toUpperCase() || "U"}
-                  </div>
-                  <div>
-                    <div className="dropdown-name">{user.fullName}</div>
-                    <div className="dropdown-email">{user.email}</div>
-                  </div>
-                </div>
-                <div className="dropdown-divider" />
-                <button className="dropdown-item" onClick={() => { setDropdownOpen(false); navigate("/profile"); }}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-                  </svg>
-                  الملف الشخصي
-                </button>
-                <button className="dropdown-item" onClick={handleDashboard}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
-                    <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-                    <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
-                  </svg>
-                  لوحة البائع
-                </button>
-                <div className="dropdown-divider" />
-                <button className="dropdown-item logout-item" onClick={handleLogout}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
-                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                    <polyline points="16 17 21 12 16 7"/>
-                    <line x1="21" y1="12" x2="9" y2="12"/>
-                  </svg>
-                  تسجيل الخروج
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* ── Body ── */}
-      <div className="ap-body">
-
-        {/* Sidebar */}
-        <aside className="ap-sidebar">
-          <nav className="ap-nav">
-            {navItems.map((item) => (
-              <div
-                key={item.label}
-                className={`ap-nav-item ${item.active ? "active" : ""}`}
-                onClick={() => item.path && navigate(item.path)}
-                style={{ cursor: "pointer" }}
-              >
-                <span className="ap-nav-icon">{item.icon}</span>
-                <span>{item.label}</span>
-              </div>
-            ))}
-          </nav>
-          <span id="ap-nav-logout" onClick={handleLogout}>← تسجيل الخروج</span>
-        </aside>
-
-        {/* Main */}
+      <SellerLayout>
         <main className="ap-main">
 
           <div className="ap-topbar">
@@ -505,7 +420,90 @@ export default function AddProduct() {
 
           </form>
         </main>
-      </div>
-    </div>
-  );
+ 
+
+      </SellerLayout>
+     );
 }
+
+
+
+
+//  {/* ── Navbar ── */}
+//       <div className="ap-navbar">
+//         <div className="ap-navbar-left">
+//           <span className="ap-logo-icon">🌿</span>
+//           <div>
+//             <div className="ap-logo-name">EcoBazaar</div>
+//             <div className="ap-logo-sub">لوحة البائع</div>
+//           </div>
+//         </div>
+
+//         <div className="ap-navbar-right">
+//           <div className="profile-wrapper" ref={dropdownRef}>
+//             <button className="nav-btn user-btn" onClick={handleProfileClick}>
+//               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+//                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+//                 <circle cx="12" cy="7" r="4"/>
+//               </svg>
+//             </button>
+
+//             {dropdownOpen && user && (
+//               <div className="profile-dropdown">
+//                 <div className="dropdown-user-info">
+//                   <div className="dropdown-avatar">
+//                     {user.fullName?.charAt(0)?.toUpperCase() || "U"}
+//                   </div>
+//                   <div>
+//                     <div className="dropdown-name">{user.fullName}</div>
+//                     <div className="dropdown-email">{user.email}</div>
+//                   </div>
+//                 </div>
+//                 <div className="dropdown-divider" />
+//                 <button className="dropdown-item" onClick={() => { setDropdownOpen(false); navigate("/profile"); }}>
+//                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
+//                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+//                   </svg>
+//                   الملف الشخصي
+//                 </button>
+//                 <button className="dropdown-item" onClick={handleDashboard}>
+//                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
+//                     <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+//                     <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+//                   </svg>
+//                   لوحة البائع
+//                 </button>
+//                 <div className="dropdown-divider" />
+//                 <button className="dropdown-item logout-item" onClick={handleLogout}>
+//                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
+//                     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+//                     <polyline points="16 17 21 12 16 7"/>
+//                     <line x1="21" y1="12" x2="9" y2="12"/>
+//                   </svg>
+//                   تسجيل الخروج
+//                 </button>
+//               </div>
+//             )}
+//           </div>
+//         </div>
+//       </div>
+
+
+
+  // {/* Sidebar */}
+  //       <aside className="ap-sidebar">
+  //         <nav className="ap-nav">
+  //           {navItems.map((item) => (
+  //             <div
+  //               key={item.label}
+  //               className={`ap-nav-item ${item.active ? "active" : ""}`}
+  //               onClick={() => item.path && navigate(item.path)}
+  //               style={{ cursor: "pointer" }}
+  //             >
+  //               <span className="ap-nav-icon">{item.icon}</span>
+  //               <span>{item.label}</span>
+  //             </div>
+  //           ))}
+  //         </nav>
+  //         <span id="ap-nav-logout" onClick={handleLogout}>← تسجيل الخروج</span>
+  //       </aside>

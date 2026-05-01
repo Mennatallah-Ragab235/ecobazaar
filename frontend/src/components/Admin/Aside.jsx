@@ -1,70 +1,52 @@
 import "../../assets/Admin.css";
-import { useNavigate } from "react-router-dom"; // ← مهم جدًا
-
+import { useNavigate, useLocation } from "react-router-dom";
 import {
-    FaThLarge,
-    FaBox,
-    FaShoppingCart,
-    FaStore,
-    FaUsers,
-    FaCog,
-    FaSignOutAlt,
-  } from "react-icons/fa";
-  
+  FaThLarge, FaBox, FaShoppingCart,
+  FaStore, FaUsers, FaSignOutAlt,
+} from "react-icons/fa";
 
+function Aside() {
+  const navigate = useNavigate();
+  const location = useLocation();
 
-
-  function Aside() {
-const navigate = useNavigate(); // لازم داخل الـ component
-
-  const token = localStorage.getItem("token");
-  const user = token ? JSON.parse(localStorage.getItem("user") || "{}") : null;
+  const menuItems = [
+    { icon: <FaThLarge />, label: "لوحة التحكم", path: "/admin" },
+    { icon: <FaBox />, label: "المنتجات", path: "/admin/products" },
+    { icon: <FaShoppingCart />, label: "الطلبات", path: "/admin/orders" },
+    { icon: <FaStore />, label: "البائعين", path: "/admin/sellers" },
+    { icon: <FaUsers />, label: "المشترين", path: "/admin/buyers" },
+  ];
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    localStorage.removeItem("role");
-    navigate("/login"); // توجيه لصفحة login
+    localStorage.clear();
+    navigate("/login");
   };
 
-    return (
-      <aside className="sidebar">
-        <div>
-          
-          <ul>
-            <li>
-              <FaThLarge className="icon" />
-              لوحة التحكم
+  return (
+    <aside className="sidebar">
+      <div>
+        <ul>
+          {menuItems.map((item) => (
+            <li
+              key={item.path}
+              className={location.pathname === item.path ? "active" : ""}
+              onClick={() => navigate(item.path)}
+              style={{ cursor: "pointer" }}
+            >
+              <span className="icon">{item.icon}</span>
+              {item.label}
             </li>
-            <li className="active">
-              <FaBox className="icon" />
-              المنتجات
-            </li>
-            <li>
-              <FaShoppingCart className="icon" />
-              الطلبات
-            </li>
-            <li>
-              <FaStore className="icon" />
-              البائعين
-            </li>
-            <li>
-              <FaUsers className="icon" />
-              المشترين
-            </li>
-          </ul>
-        </div>
-  
-        <div className="bottom">
-          
-  
-          <span className="logout">
-            <FaSignOutAlt className="icon" />
-            <p onClick={handleLogout}>← تسجيل الخروج</p>
-          </span>
-        </div>
-      </aside>
-    );
-  }
-  
-  export default Aside;
+          ))}
+        </ul>
+      </div>
+      <div className="bottom">
+        <span className="logout" onClick={handleLogout} style={{ cursor: "pointer" }}>
+          <FaSignOutAlt className="icon" />
+          <p>تسجيل الخروج</p>
+        </span>
+      </div>
+    </aside>
+  );
+}
+
+export default Aside;

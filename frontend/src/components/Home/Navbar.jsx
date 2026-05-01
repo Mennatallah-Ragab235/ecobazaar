@@ -48,7 +48,7 @@ const handleLogout = () => {
   };
 const handleKeyDown = (e) => {
   if (e.key === "Enter") {
-    navigate("/products");
+    navigate("/products?search=" + searchVal);
   }
 };
 
@@ -88,7 +88,7 @@ const handleKeyDown = (e) => {
 
         <div className="nav-actions">
  
-              <button className="nav-btn cart-btn" onClick={() => navigate("/cart")}>            
+              <button className="nav-btnH        " onClick={() => navigate("/cart")}>            
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
               <line x1="3" y1="6" x2="21" y2="6"/>
@@ -99,7 +99,7 @@ const handleKeyDown = (e) => {
 
           {/* ── Profile Button + Dropdown ── */}
           <div className="profile-wrapper" ref={dropdownRef}>
-            <button className="nav-btn user-btn" onClick={handleProfileClick}>
+            <button className="nav-btnH        " onClick={handleProfileClick}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                 <circle cx="12" cy="7" r="4"/>

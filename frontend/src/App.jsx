@@ -18,7 +18,13 @@ import AddProduct from "./pages/Seller/AddProduct";
 import Header from "./components/Admin/Header";
 import Dashboard from "./components/Admin/Dashboard";
 import Aside from "./components/Admin/Aside";
+import AdminOrders from "./pages/Admin/AdminOrders";
+import AdminSellers from "./pages/Admin/AdminSellers";
+import AdminBuyers from "./pages/Admin/AdminBuyers";
+import AdminProducts from "./pages/Admin/AdminProducts"; // أو المسار عندك
+
 import SellerProducts from "./pages/Seller/SellerProducts";
+import SellerOrders from "./pages/Seller/OrdersPage";
 import ProductsPage from "./pages/ProductsPage";
 import CartPage from "./pages/CartPage";
 import Checkout from "./pages/Checkout";
@@ -27,7 +33,15 @@ import OrderSuccess from "./pages/OrderSuccess";
 import Profile from "./pages/Profile";
 import OrderDetails from "./pages/OrderDetails";
 
+
+
 import "./App.css";
+
+
+
+const clearCartUI = () => {
+  setCartCount(0);
+};
 
 const AUTH_ROUTES = ["/login", "/register/buyer", "/register/seller"];
 const API_URL = "http://localhost:5000";
@@ -60,28 +74,19 @@ function Layout({ children, cartCount, searchVal, setSearchVal }) {
 }
 
 /* ================= HOME ================= */
-function HomePage({
-  onAddToCart,
-  searchVal,
-  selectedCategory,
-  setSelectedCategory,
-}) {
+function HomePage({ onAddToCart, searchVal, selectedCategory, setSelectedCategory }) {
   return (
     <>
       <Hero />
-
-      {/* 🔥 إضافة الفئات */}
       <Categories
         selectedCategory={selectedCategory}
         setSelectedCategory={setSelectedCategory}
       />
-
       <Featuredproducts
         onAddToCart={onAddToCart}
         searchVal={searchVal}
         selectedCategory={selectedCategory}
       />
-
       <Stats />
       <JoinSection />
       <Features />
@@ -89,14 +94,16 @@ function HomePage({
   );
 }
 
-/* ================= ADMIN ================= */
-function Admin() {
+/* ================= ADMIN LAYOUT ================= */
+function AdminLayout({ children }) {
   return (
     <div className="admin-page">
       <Header />
       <div className="admin-body">
         <Aside />
-        <Dashboard />
+        <div className="admin-content">
+          {children}
+        </div>
       </div>
     </div>
   );
@@ -109,47 +116,41 @@ function App() {
   const [selectedCategory, setSelectedCategory] = useState("");
 
   /* ================= GET CART COUNT ================= */
-  const fetchCartCount = useCallback(async () => {
-    const token = localStorage.getItem("token");
+ const fetchCartCount = useCallback(async () => {
+  const token = localStorage.getItem("token");
 
-    if (!token) {
-      setCartCount(0);
-      return;
-    }
+  if (!token) {
+    setCartCount(0);
+    return;
+  }
 
-    try {
-      const res = await fetch(`${API_URL}/api/cart`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+  try {
+    const res = await fetch(`${API_URL}/api/cart`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
-      if (!res.ok) return;
+    if (!res.ok) return;
 
-      const data = await res.json();
+    const data = await res.json();
 
-      const count = (data.items || []).reduce(
-        (sum, item) => sum + item.quantity,
-        0
-      );
+    const count = (data.items || []).reduce(
+      (sum, item) => sum + item.quantity,
+      0
+    );
 
-      setCartCount(count);
-    } catch (err) {
-      console.error("Cart fetch error:", err);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchCartCount();
-  }, [fetchCartCount]);
+    setCartCount(count); // ✅ ده المهم
+  } catch (err) {
+    console.error("Cart fetch error:", err);
+  }
+}, []);
 
   /* ================= ADD TO CART ================= */
   const addToCart = async (product) => {
     const token = localStorage.getItem("token");
-
     if (!token) {
       window.location.href = "/login";
       return;
     }
-
     try {
       await fetch(`${API_URL}/api/cart/add`, {
         method: "POST",
@@ -157,22 +158,16 @@ function App() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          productId: product._id,
-          quantity: 1,
-        }),
+        body: JSON.stringify({ productId: product._id, quantity: 1 }),
       });
-
       await fetchCartCount();
     } catch (err) {
       console.error("Add to cart error:", err);
     }
   };
-
-  /* ================= REFRESH ================= */
-  const refreshCart = async () => {
-    await fetchCartCount();
-  };
+useEffect(() => {
+  fetchCartCount();
+}, [fetchCartCount]);
 
   return (
     <BrowserRouter>
@@ -180,9 +175,9 @@ function App() {
         cartCount={cartCount}
         searchVal={searchVal}
         setSearchVal={setSearchVal}
-        
       >
         <Routes>
+          {/* ========== HOME ========== */}
           <Route
             path="/"
             element={
@@ -195,35 +190,71 @@ function App() {
             }
           />
 
+          {/* ========== AUTH ========== */}
           <Route path="/login" element={<Login />} />
           <Route path="/register/buyer" element={<RegisterBuyer />} />
           <Route path="/register/seller" element={<RegisterSeller />} />
 
+          {/* ========== SELLER ========== */}
           <Route path="/seller/addproduct" element={<AddProduct />} />
           <Route path="/seller/products" element={<SellerProducts />} />
+<Route path="/seller/orders" element={<SellerOrders />} />
+          {/* ========== ADMIN ========== */}
+          <Route
+            path="/admin"
+            element={
+              <AdminLayout>
+                <Dashboard />
+              </AdminLayout>
+            }
+          />
+          <Route
+            path="/admin/orders"
+            element={
+              <AdminLayout>
+                <AdminOrders />
+              </AdminLayout>
+            }
+          />
+          <Route
+            path="/admin/sellers"
+            element={
+              <AdminLayout>
+                <AdminSellers />
+              </AdminLayout>
+            }
+          />
+          <Route
+            path="/admin/buyers"
+            element={
+              <AdminLayout>
+                <AdminBuyers />
+              </AdminLayout>
+            }
+          />
 
-          <Route path="/admin" element={<Admin />} />
-<Route path="/product/:id" element={<ProductDetailsPage />} />
-
+ <Route
+            path="/admin/products"
+            element={
+              <AdminLayout>
+                <AdminProducts />
+              </AdminLayout>
+            }
+          />
+          {/* ========== SHOP ========== */}
+          <Route path="/product/:id" element={<ProductDetailsPage />} />
           <Route
             path="/products"
-            element={<ProductsPage onAddToCart={addToCart}  searchVal={searchVal}/>}
+            element={<ProductsPage onAddToCart={addToCart} searchVal={searchVal} />}
           />
-
-          <Route
-            path="/cart"
-            element={<CartPage refreshCart={refreshCart} />}
-          />
-
-          <Route
-            path="/checkout"
-            element={<Checkout refreshCart={refreshCart} />}
-          />
-
+          <Route path="/cart" element={<CartPage refreshCart={fetchCartCount} />} />
+          <Route path="/checkout" element={<Checkout
+  refreshCart={fetchCartCount}
+  setCartCount={setCartCount}
+/>} />
           <Route path="/order-success" element={<OrderSuccess />} />
-<Route path="/profile" element={<Profile />} />
-<Route path="/order/:id" element={<OrderDetails />} />
-
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/order/:id" element={<OrderDetails />} />
         </Routes>
       </Layout>
     </BrowserRouter>
@@ -231,3 +262,4 @@ function App() {
 }
 
 export default App;
+
