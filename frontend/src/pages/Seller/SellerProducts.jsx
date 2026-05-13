@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "../../assets/SellerProducts.css";
-import SellerLayout from "../../components/Seller/SellerLayout";
+// import SellerLayout from "../../components/Seller/SellerLayout";
 import "../../assets/SellerLayout.css";
 
  import { CATEGORIES } from "../../components/Home/Categories";
@@ -12,10 +12,10 @@ const statusLabel = {
   rejected: { text: "مرفوض", cls: "rejected" },
 };
 
+
 export default function SellerProducts() {
   const navigate = useNavigate();
   const location = useLocation();
-
   const [products, setProducts] = useState([]);
   const [loading, setLoading]   = useState(true);
   const [search, setSearch]     = useState("");
@@ -38,14 +38,18 @@ const [formData, setFormData] = useState(null);
       .finally(() => setLoading(false));
   }, []);
 
+  const finalPrice =
+  formData?.price && formData?.discount
+    ? Number(formData.price) -
+      (Number(formData.price) * Number(formData.discount)) / 100
+    : formData?.price;
   const filtered = products.filter((p) =>
     p.name?.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
-    <SellerLayout>
+      <div className="sp-page">
 
-      {/* HEADER */}
       <div className="sp-header">
         <div>
           <h1 className="sp-title">إدارة المنتجات</h1>
@@ -109,7 +113,23 @@ const [formData, setFormData] = useState(null);
                     </td>
 
                     <td>{p.category}</td>
-                    <td>جنيه {p.price}</td>
+                    <td>
+  {p.discount > 0 ? (
+    <div className="sp-table-price">
+      <span className="sp-old-price">
+        {p.price} جنيه
+      </span>
+
+      <span className="sp-new-price">
+        {p.finalPrice || (
+          p.price - (p.price * p.discount) / 100
+        )} جنيه
+      </span>
+    </div>
+  ) : (
+    <>جنيه {p.price}</>
+  )}
+</td>
 
                     <td className={p.quantity === 0 ? "sp-zero" : ""}>
                       {p.quantity}
@@ -126,15 +146,16 @@ const [formData, setFormData] = useState(null);
 
     <button
       className="sp-btn-edit"
-     onClick={() => {
+    onClick={() => {
   setEditProduct(p);
- setFormData({
-  name: p?.name || "",
-  price: p?.price || "",
-  quantity: p?.quantity || "",
-  category: p?.category || "",
-  description: p?.description || "",
-});
+  setFormData({
+    name: p?.name || "",
+    price: p?.price || "",
+    discount: p?.discount || "", // هنا أضفنا الخصم
+    quantity: p?.quantity || "",
+    category: p?.category || "",
+    description: p?.description || "",
+  });
 }}
     >
       تعديل
@@ -189,6 +210,22 @@ const [formData, setFormData] = useState(null);
           />
         </div>
 
+<div className="sp-field">
+  <label>الخصم %</label>
+  <input
+    type="number"
+    min="0"
+    max="100"
+    value={formData.discount || ""}
+    onChange={(e) =>
+      setFormData({
+        ...formData,
+        discount: e.target.value,
+      })
+    }
+  />
+</div>
+
         {/* المخزون */}
         <div className="sp-field">
           <label>المخزون</label>
@@ -235,7 +272,29 @@ const [formData, setFormData] = useState(null);
 
       {/* أزرار */}
       <div className="modal-actions">
+{formData?.price && (
+  <div className="sp-price-preview">
+    {formData.discount ? (
+      <>
+        <span className="sp-old-price">
+          {Number(formData.price).toFixed(2)} جنيه
+        </span>
 
+        <span className="sp-new-price">
+          {Number(finalPrice).toFixed(2)} جنيه
+        </span>
+
+        <span className="sp-discount-badge">
+          خصم {formData.discount}%
+        </span>
+      </>
+    ) : (
+      <span className="sp-new-price">
+        {Number(formData.price).toFixed(2)} جنيه
+      </span>
+    )}
+  </div>
+)}
         <button
           className="modal-btn approve"
           disabled={saving}
@@ -251,7 +310,11 @@ const [formData, setFormData] = useState(null);
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`,
                   },
-                  body: JSON.stringify(formData),
+                  body: JSON.stringify({
+  ...formData,
+  discount: Number(formData.discount || 0),
+  finalPrice: Number(finalPrice || formData.price),
+}),
                 }
               );
 
@@ -302,7 +365,8 @@ const [formData, setFormData] = useState(null);
           </div>
         </div>
       )}
-
-    </SellerLayout>
-  );
+    
+  
+</div>
+  )
 }

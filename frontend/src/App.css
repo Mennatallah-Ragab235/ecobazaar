@@ -22,9 +22,8 @@
   box-sizing: border-box;
 }
 
-html, body, #root {
-  width: 100%;
-  height: 100%;
+html {
+  scroll-behavior: smooth;
 }
 
 body {
@@ -32,15 +31,20 @@ body {
   color: var(--text-dark);
   direction: rtl;
   background: var(--white);
+  overflow-x: hidden; /* ← بس x عشان الـ scroll الأفقي */
+}
+
+#root {
+  width: 100%;
 }
 
 .app {
   min-height: 100vh;
   width: 100%;
   display: flex;
-  flex-direction: column; /* مهم جدًا */
+  flex-direction: column;
+  direction: ltr; /* ← مهم للـ RTL */
 }
-
 
 a {
   text-decoration: none;
@@ -54,34 +58,4 @@ button {
 
 img {
   max-width: 100%;
-}
-
-/* App.css أو Admin.css */
-.admin-page {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  width: 100%;
-}
-
-.admin-body {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-  width: 100%;
-
-}
-
-.admin-body aside {
-  width: 250px; /* حجم الـ Sidebar */
-  background-color: #f4f4f4; 
-  border-right: 1px solid #ccc;
-}
-
-.admin-body main {
-  flex: 1;
-  padding: 20px;
-  overflow-y: auto;
-    width: 100%;
-
 }

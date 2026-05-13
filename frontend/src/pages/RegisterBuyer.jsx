@@ -78,7 +78,7 @@ navigate("/");
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="field-group">
-            <label>الاسم الكامل</label>
+            <label>الاسم الكامل<span style={{ color: "#e53935", fontSize: "12px" }}>*</span></label>
             <input id="fullName"
               type="text"
               placeholder="أدخل اسمك الكامل"
@@ -89,7 +89,7 @@ navigate("/");
           </div>
 
           <div className="field-group">
-            <label>البريد الإلكتروني</label>
+            <label>البريد الإلكتروني<span style={{ color: "#e53935", fontSize: "12px" }}>*</span></label>
             <input id="email"
               type="email"
               placeholder="example@email.com"
@@ -100,18 +100,18 @@ navigate("/");
           </div>
 
           <div className="field-group">
-            <label>رقم الهاتف</label>
+            <label>رقم الهاتف<span style={{ color: "#e53935", fontSize: "12px" }}>*</span></label>
             <input id="phone"
               type="tel"
               placeholder="01012345678"
               value={form.phone}
-              onChange={set("phone")}
+              onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, "").slice(0, 11) })}
               dir="ltr"
             />
           </div>
 
           <div className="field-group">
-            <label>كلمة المرور</label>
+            <label>كلمة المرور <span style={{ color: "#e53935", fontSize: "12px" }}>*</span></label>
             <input id="password"
               type="password"
               placeholder="كلمة المرور"
@@ -122,7 +122,7 @@ navigate("/");
           </div>
 
           <div className="field-group">
-            <label>تأكيد كلمة المرور</label>
+            <label>تأكيد كلمة المرور <span style={{ color: "#e53935", fontSize: "12px" }}>*</span></label>
             <input id="confirmPassword"
               type="password"
               placeholder="تأكيد كلمة المرور"

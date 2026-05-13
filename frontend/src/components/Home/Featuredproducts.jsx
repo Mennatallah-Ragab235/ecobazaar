@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../assets/FeaturedProducts.css";
+import { getFinalPrice } from "../../utils/pricing";
 
-/* ================= RATING ================= */
 function getFinalRating(product) {
   if (!product) return 0;
 
@@ -19,8 +19,6 @@ function getFinalRating(product) {
 
   return 0;
 }
-
-/* ================= STAR RATING ================= */
 function StarRating({ rating }) {
   return (
     <div className="stars">
@@ -40,14 +38,14 @@ function StarRating({ rating }) {
   );
 }
 
-/* ================= PRODUCT CARD ================= */
 function ProductCard({
   product,
   onAddToCart,
   animationDelay,
   wishlistIds,
   onToggleWishlist,
-}) {
+}) 
+{
   const [imgError, setImgError] = useState(false);
   const navigate = useNavigate();
 
@@ -56,9 +54,12 @@ function ProductCard({
   const wishlisted = wishlistIds?.has(product._id);
 
   const img = product.image || product.images?.[0] || "";
-  const price = parseFloat(product.price || 0);
-  const oldPrice = parseFloat(product.originalPrice || 0);
 
+const originalPrice = parseFloat(product.price || 0);
+const discount = product.discount || 0;
+
+const finalPrice = getFinalPrice(product.price, discount);
+const hasDiscount = discount > 0;
 
   const rating =
   product?.rating ??
@@ -81,7 +82,6 @@ const reviews =
     (product.seller && product.seller.storeName) ||
     "";
 
-  const hasDiscount = oldPrice && oldPrice > price;
 
   /* ================= WISHLIST TOGGLE ================= */
   const handleWishlist = async (e) => {
@@ -170,18 +170,31 @@ const reviews =
           <span className="rating-count">({reviews} تقييم)</span>
         </div>
 
-        <div className="product-price-row">
-          <div className="product-prices">
-            <span className="price-current">
-              {price.toLocaleString("ar-EG")} جنيه
-            </span>
+    <div className="product-price-row">
+  <div className="product-prices">
 
-            {hasDiscount && (
-              <span className="price-original">
-                {oldPrice.toLocaleString("ar-EG")} جنيه
-              </span>
-            )}
-          </div>
+    {hasDiscount ? (
+      <>
+        <span className="price-current">
+          {finalPrice.toLocaleString("ar-EG")} جنيه
+        </span>
+
+        <span className="price-original">
+          {originalPrice.toLocaleString("ar-EG")} جنيه
+        </span>
+
+        <span className="discount-badge">
+          خصم {discount}%
+        </span>
+      </>
+    ) : (
+      <span className="price-current">
+        {originalPrice.toLocaleString("ar-EG")} جنيه
+      </span>
+    )}
+
+  </div>
+</div>
 
           <button className="add-to-cart" onClick={(e) => { e.stopPropagation(); onAddToCart(product); }}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18">
@@ -191,12 +204,11 @@ const reviews =
             </svg>
           </button>
         </div>
+
       </div>
-    </div>
   );
 }
 
-/* ================= MAIN ================= */
 export default function FeaturedProducts({ onAddToCart, searchVal }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -252,7 +264,6 @@ export default function FeaturedProducts({ onAddToCart, searchVal }) {
     });
   };
 
-  /* ================= SEARCH ================= */
   const filteredBySearch = products.filter((product) =>
     product.name
       ?.toLowerCase()

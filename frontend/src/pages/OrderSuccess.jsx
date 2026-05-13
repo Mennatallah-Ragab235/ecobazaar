@@ -10,21 +10,50 @@ function OrderSuccess() {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // جيب آخر أوردر للمستخدم
   useEffect(() => {
     if (!token) { navigate("/login"); return; }
 
-    fetch("/api/orders?limit=1", {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-      .then(r => r.json())
-      .then(data => {
-        // لو array خد أول أوردر، لو object خده مباشرة
+    // ✅ جيب orderId من الـ URL params (Paymob redirect) أو من الـ state (COD)
+    const params   = new URLSearchParams(location.search);
+    const orderId  = params.get("orderId") || location.state?.orderId;
+    const isCard   = !!params.get("orderId"); // جاي من Paymob redirect
+
+    const loadOrder = async () => {
+      try {
+        // ✅ لو جاي من Paymob → confirm الـ payment وافرغ السلة
+        if (isCard && orderId) {
+          await fetch(`/api/paymob/confirm-payment/${orderId}`, {
+            method: "PATCH",
+            headers: { Authorization: `Bearer ${token}` },
+          });
+
+          // ✅ فرّغ السلة
+          await fetch("/api/cart/clear", {
+            method: "DELETE",
+            headers: { Authorization: `Bearer ${token}` },
+          });
+        }
+
+        // ✅ جيب بيانات الأوردر
+        const url = orderId
+          ? `/api/orders/${orderId}`
+          : "/api/orders?limit=1";
+
+        const res  = await fetch(url, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
         const latest = Array.isArray(data) ? data[0] : data;
         setOrder(latest);
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
+
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadOrder();
   }, []);
 
   const formatDate = (dateStr) => {

@@ -1,0 +1,455 @@
+/* ═══════════════════════════════════════════
+   EcoBazaar — Policies CSS
+   ═══════════════════════════════════════════ */
+
+.policy-page {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 20px 60px;
+  direction: rtl;
+  font-family: 'Cairo', sans-serif;
+}
+
+/* ── Hero ── */
+.policy-hero {
+  background: linear-gradient(135deg, #1e5c2a 0%, #2d7a3a 50%, #4caf50 100%);
+  border-radius: 0 0 24px 24px;
+  padding: 60px 40px;
+  text-align: center;
+  color: #fff;
+  margin: 0 -20px 40px;
+}
+
+.policy-hero-icon {
+  font-size: 56px;
+  margin-bottom: 16px;
+}
+
+.policy-hero h1 {
+  font-size: 32px;
+  font-weight: 800;
+  margin: 0 0 12px;
+  color: #fff;
+}
+
+.policy-hero p {
+  font-size: 16px;
+  opacity: 0.88;
+  margin: 0;
+  color: #fff;
+}
+
+/* ── Body ── */
+.policy-body {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* ── Highlight box ── */
+.policy-highlight {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  background: #f0faf4;
+  border: 1.5px solid #b8ddc8;
+  border-right: 5px solid #2d7a3a;
+  border-radius: 12px;
+  padding: 20px 24px;
+}
+
+.policy-highlight-icon {
+  font-size: 32px;
+  flex-shrink: 0;
+}
+
+.policy-highlight strong {
+  display: block;
+  color: #1e5c2a;
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+
+.policy-highlight p {
+  margin: 0;
+  color: #444;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+/* ── Sections ── */
+.policy-section {
+  background: #fff;
+  border-radius: 16px;
+  padding: 28px 32px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  border: 1px solid #eee;
+}
+
+.policy-section h2 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 20px;
+  font-weight: 800;
+  color: #1e5c2a;
+  margin: 0 0 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #e8f5e9;
+}
+
+.policy-section h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 8px;
+}
+
+.policy-section p {
+  color: #555;
+  font-size: 14px;
+  line-height: 1.8;
+  margin: 0 0 12px;
+}
+
+.policy-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: #2d7a3a;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 14px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.policy-survey-note {
+  background: #fff8e1;
+  border: 1px solid #ffe082;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 13px;
+  color: #795548;
+  margin-bottom: 16px !important;
+}
+
+/* ── Table ── */
+.policy-table {
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #e0e0e0;
+}
+
+.policy-table-row {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  gap: 1px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.policy-table-row:last-child {
+  border-bottom: none;
+}
+
+.policy-table-row.header {
+  background: #1e5c2a;
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.policy-table-row.header span {
+  padding: 12px 16px;
+  color: #fff;
+}
+
+.policy-table-row span {
+  padding: 12px 16px;
+  font-size: 14px;
+  color: #444;
+  background: #fff;
+}
+
+.policy-table-row span:first-child {
+  background: #f9fdf9;
+  font-weight: 600;
+  color: #2d7a3a;
+  border-left: 1px solid #f0f0f0;
+}
+
+.green-text { color: #2d7a3a !important; font-weight: 700; }
+
+/* ── Lists ── */
+.policy-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.policy-list-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.policy-list-item.yes {
+  background: #f0faf4;
+  color: #1e5c2a;
+  border: 1px solid #c8e6c9;
+}
+
+.policy-list-item.no {
+  background: #fff5f5;
+  color: #c0392b;
+  border: 1px solid #ffcdd2;
+}
+
+/* ── Steps ── */
+.policy-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+}
+
+.policy-step {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  background: #f9fdf9;
+  border-radius: 10px;
+  border: 1px solid #e8f5e9;
+  font-size: 14px;
+  color: #333;
+  line-height: 1.6;
+}
+
+.step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  background: #2d7a3a;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+/* ── Cards Grid ── */
+.policy-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.policy-card {
+  background: #f9fdf9;
+  border: 1px solid #e0eee0;
+  border-radius: 12px;
+  padding: 20px 16px;
+  text-align: center;
+}
+
+.policy-card.accent {
+  background: #e8f5e9;
+  border-color: #a5d6a7;
+}
+
+.policy-card-icon {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.policy-card h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1e5c2a;
+  margin-bottom: 8px;
+}
+
+.policy-card p {
+  font-size: 13px;
+  color: #555;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.big-num {
+  font-size: 28px !important;
+  font-weight: 800 !important;
+  color: #2d7a3a !important;
+  margin: 4px 0 !important;
+}
+
+/* ── Rights Grid ── */
+.policy-rights-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+}
+
+.policy-right-item {
+  background: #fff;
+  border: 1px solid #e0eee0;
+  border-top: 3px solid #2d7a3a;
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+}
+
+.right-icon {
+  font-size: 28px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.policy-right-item h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1e5c2a;
+  margin-bottom: 6px;
+}
+
+.policy-right-item p {
+  font-size: 12px;
+  color: #666;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ── Escrow Flow ── */
+.escrow-flow {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+}
+
+.escrow-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 14px 18px;
+  background: #f9fdf9;
+  border-radius: 12px;
+  border: 1px solid #e8f5e9;
+}
+
+.escrow-step.highlight-step {
+  background: #e8f5e9;
+  border-color: #81c784;
+  border-width: 2px;
+}
+
+.escrow-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.escrow-step.yes-step {
+  background: #f0faf4;
+  border-color: #a5d6a7;
+}
+
+.escrow-step.no-step {
+  background: #fff5f5;
+  border-color: #ffcdd2;
+}
+
+.escrow-step-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  background: #2d7a3a;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.escrow-step-circle.green { background: #2d7a3a; }
+.escrow-step-circle.red   { background: #c0392b; }
+
+.escrow-step-content h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1e5c2a;
+  margin: 0 0 4px;
+}
+
+.escrow-step-content p {
+  font-size: 13px;
+  color: #555;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.escrow-arrow {
+  text-align: center;
+  font-size: 20px;
+  color: #81c784;
+  padding: 2px 0;
+}
+
+/* ── Footer note ── */
+.policy-footer-note {
+  background: linear-gradient(135deg, #1e5c2a, #2d7a3a);
+  border-radius: 14px;
+  padding: 28px 32px;
+  text-align: center;
+  color: #fff;
+}
+
+.policy-footer-note strong {
+  display: block;
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+
+.policy-footer-note p {
+  font-size: 14px;
+  opacity: 0.9;
+  margin: 0;
+  color: #fff;
+}
+
+/* ── Contact Bar ── */
+.policy-contact-bar {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 24px;
+  background: #f5f5f5;
+  border-radius: 12px;
+  padding: 16px 24px;
+  font-size: 14px;
+  color: #555;
+  border: 1px solid #e0e0e0;
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .policy-hero { padding: 40px 20px; }
+  .policy-hero h1 { font-size: 24px; }
+  .policy-section { padding: 20px 16px; }
+  .escrow-split { grid-template-columns: 1fr; }
+  .policy-table-row { grid-template-columns: 1fr; }
+  .policy-table-row span:first-child { border-left: none; border-bottom: 1px solid #f0f0f0; }
+}

@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { FaEye, FaCheck, FaTimes, FaSpinner, FaBox } from "react-icons/fa";
+import AdminLayout from "../../components/Admin/AdminLayout";
+import "../../assets/AdminLayout.css";
 
 function AdminProducts() {
   const [products, setProducts]           = useState([]);
@@ -73,6 +75,7 @@ function AdminProducts() {
   ];
 
   return (
+
     <main className="dashboard" dir="rtl">
       <h2 className="page-title">إدارة المنتجات</h2>
 

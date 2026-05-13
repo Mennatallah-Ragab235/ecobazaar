@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "../assets/ProductsPage.css";
 import { CATEGORY_VALUES } from "../components/Home/Categories";
 import { useSearchParams } from "react-router-dom";
-
+import { getFinalPrice } from "../utils/pricing";
 
 function normalizeText(text = "") {
   return text
@@ -70,20 +70,24 @@ function ProductCard({ product, onAddToCart, wishlistIds, onToggleWishlist }) {
   const navigate = useNavigate();
   const [imgError, setImgError] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [cartLoading, setCartLoading] = useState(false);
+  const [addedToCart, setAddedToCart] = useState(false);
 
   const token = localStorage.getItem("token");
   const wishlisted = wishlistIds.has(product._id);
 
   const name     = getField(product, "name", "title", "Name") || "منتج";
-  const price    = parseFloat(getField(product, "price", "Price") || 0);
-  const oldPrice = parseFloat(getField(product, "originalPrice", "oldPrice", "comparePrice") || 0);
   const rating   = getFinalRating(product);
   const reviews  = parseInt(getField(product, "numReviews", "reviewCount", "reviews") || 0);
   const cat      = formatCategory(getField(product, "category", "Category") || "");
   const img      = getField(product, "image") || (Array.isArray(product.images) && product.images[0]) || "";
   const brand    = product.brand || product.storeName || product.sellerName ||
                    (product.seller && product.seller.storeName) || "";
-  const hasDiscount = oldPrice && oldPrice > price;
+
+  const originalPrice = parseFloat(product.price || 0);
+  const discount = product.discount || 0;
+  const finalPrice = getFinalPrice(product.price, product.discount);
+  const hasDiscount = product.discount > 0;
 
   const handleWishlist = async (e) => {
     e.stopPropagation();
@@ -105,6 +109,22 @@ function ProductCard({ product, onAddToCart, wishlistIds, onToggleWishlist }) {
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAddToCart = async (e) => {
+    e.stopPropagation();
+    if (!token) { navigate("/login"); return; }
+    if (cartLoading || addedToCart) return;
+    setCartLoading(true);
+    try {
+      await onAddToCart(product._id);
+      setAddedToCart(true);
+      setTimeout(() => setAddedToCart(false), 2000);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setCartLoading(false);
     }
   };
 
@@ -135,6 +155,15 @@ function ProductCard({ product, onAddToCart, wishlistIds, onToggleWishlist }) {
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
           </svg>
         </button>
+
+        {/* 🛒 زرار السلة */}
+       <button className="add-to-cart" onClick={(e) => { e.stopPropagation(); onAddToCart(product); }}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18">
+              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <path d="M16 10a4 4 0 0 1-8 0"/>
+            </svg>
+          </button>
       </div>
 
       <div className="product-info">
@@ -150,18 +179,24 @@ function ProductCard({ product, onAddToCart, wishlistIds, onToggleWishlist }) {
 
         <div className="product-price-row">
           <div className="product-prices">
-            <span className="price-current">{price.toLocaleString("ar-EG")} جنيه</span>
-            {hasDiscount && (
-              <span className="price-original">{oldPrice.toLocaleString("ar-EG")} جنيه</span>
+            {hasDiscount ? (
+              <>
+                <span className="price-current">
+                  {finalPrice.toLocaleString("ar-EG")} جنيه
+                </span>
+                <span className="price-original">
+                  {originalPrice.toLocaleString("ar-EG")} جنيه
+                </span>
+                <span className="discount-badge">
+                  خصم {product.discount}%
+                </span>
+              </>
+            ) : (
+              <span className="price-current">
+                {originalPrice.toLocaleString("ar-EG")} جنيه
+              </span>
             )}
           </div>
-          <button className="add-to-cart" onClick={(e) => { e.stopPropagation(); onAddToCart(product); }}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18">
-              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
-              <line x1="3" y1="6" x2="21" y2="6"/>
-              <path d="M16 10a4 4 0 0 1-8 0"/>
-            </svg>
-          </button>
         </div>
       </div>
     </div>
@@ -173,7 +208,6 @@ export default function ProductsPage({ onAddToCart, searchVal }) {
   const [filtered, setFiltered]       = useState([]);
   const [loading, setLoading]         = useState(true);
   const [error, setError]             = useState("");
-  // const [search, setSearch]           = useState("");
   const [maxPrice, setMaxPrice]       = useState(1000);
   const [minRating, setMinRating]     = useState(0);
   const [ecoOnly, setEcoOnly]         = useState(false);
@@ -182,19 +216,23 @@ export default function ProductsPage({ onAddToCart, searchVal }) {
   const [wishlistIds, setWishlistIds] = useState(new Set());
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
+  const CATS = ["العناية الشخصية", "المنزل والحديقة", "العطور والشموع الطبيعية", "الحرف اليدوية"];
+  const [selectedStores, setSelectedStores] = useState([]);
+  const [allSelected, setAllSelected] = useState(true);
+  const [searchParams] = useSearchParams();
+  const categoryFromUrl = searchParams.get("category") || "";
 
- 
+  function toggleStore(store) {
+    setSelectedCats([]);
+    setSelectedStores(prev =>
+      prev.includes(store)
+        ? prev.filter(s => s !== store)
+        : [...prev, store]
+    );
+  }
 
-
-
-
-
-  const CATS = ["العناية الشخصية", "المنزل والحديقة", "الأزياء المستدامة", "الأطعمة العضوية"];
-
-  // جيب المنتجات
   useEffect(() => { fetchProducts(); }, []);
 
-  // جيب المفضلة مرة واحدة
   useEffect(() => {
     if (!token) return;
     fetch("/api/wishlist", { headers: { Authorization: `Bearer ${token}` } })
@@ -211,7 +249,8 @@ export default function ProductsPage({ onAddToCart, searchVal }) {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("/api/products/approved");
+          const res = await fetch(`/api/products/approved?t=${Date.now()}`); // ← أضيف timestamp
+
       if (!res.ok) throw new Error("فشل تحميل المنتجات");
       const data = await res.json();
       setAllProducts(Array.isArray(data) ? data : data.products || data.data || []);
@@ -222,7 +261,6 @@ export default function ProductsPage({ onAddToCart, searchVal }) {
     }
   }
 
-  // تحديث المفضلة محلياً بدون fetch جديد
   const handleToggleWishlist = (productId, added) => {
     setWishlistIds(prev => {
       const next = new Set(prev);
@@ -233,41 +271,77 @@ export default function ProductsPage({ onAddToCart, searchVal }) {
 
   const applyFilters = useCallback(() => {
     let result = [...allProducts];
-if (searchVal?.trim()) {
-  const q = normalizeText(searchVal);
 
-  result = result.filter(p => {
-  const name = normalizeText(getField(p, "name", "title"));
-const category = normalizeText(getField(p, "category"));
-const brand = normalizeText(p.brand || p.storeName || "");
-const desc = normalizeText(p.description || "");
+    if (categoryFromUrl.trim()) {
+      result = result.filter(p =>
+        formatCategory(getField(p, "category")) === categoryFromUrl
+      );
+    }
 
-    return (
-      name.includes(q) ||
-      category.includes(q) ||
-      brand.includes(q) ||
-      desc.includes(q)
-    );
-  });
-}
-
+    if (searchVal?.trim()) {
+      const q = normalizeText(searchVal);
+      result = result.filter(p => {
+        const name = normalizeText(getField(p, "name", "title"));
+        const category = normalizeText(getField(p, "category"));
+        const brand = normalizeText(p.brand || p.storeName || "");
+        const desc = normalizeText(p.description || "");
+        return (
+          name.includes(q) ||
+          category.includes(q) ||
+          brand.includes(q) ||
+          desc.includes(q)
+        );
+      });
+    }
 
     result = result.filter(p => parseFloat(getField(p, "price") || 0) <= maxPrice);
     result = result.filter(p => getFinalRating(p) >= minRating);
     if (ecoOnly) result = result.filter(p => p.isEco || p.eco || p.isEcoFriendly);
+
+    if (selectedStores.length > 0) {
+      result = result.filter(p => {
+        const store =
+          p.brand ||
+          p.storeName ||
+          p.seller?.storeName ||
+          p.sellerName;
+        return selectedStores.includes(store);
+      });
+    }
+
     if (selectedCats.length > 0)
       result = result.filter(p => selectedCats.includes(formatCategory(getField(p, "category") || "")));
+
     if (sort === "price_asc")  result.sort((a, b) => parseFloat(a.price||0) - parseFloat(b.price||0));
     else if (sort === "price_desc") result.sort((a, b) => parseFloat(b.price||0) - parseFloat(a.price||0));
     else if (sort === "rating") result.sort((a, b) => getFinalRating(b) - getFinalRating(a));
+
     setFiltered(result);
   }, [allProducts, searchVal, maxPrice, minRating, ecoOnly, selectedCats, sort]);
 
   useEffect(() => { applyFilters(); }, [applyFilters]);
 
   function toggleCat(cat) {
-    setSelectedCats(prev => prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat]);
+    setSelectedStores([]);
+    setSelectedCats(prev =>
+      prev.includes(cat)
+        ? prev.filter(c => c !== cat)
+        : [...prev, cat]
+    );
   }
+
+  const stores = Array.from(
+    new Set(
+      allProducts
+        .map(p =>
+          p.brand ||
+          p.storeName ||
+          p.seller?.storeName ||
+          p.sellerName
+        )
+        .filter(Boolean)
+    )
+  );
 
   return (
     <div className="page-root" dir="ltr">
@@ -294,12 +368,26 @@ const desc = normalizeText(p.description || "");
             <div className="filter-section">
               <h4>الفئات</h4>
               <label className="filter-option">
-                <input type="checkbox" checked={selectedCats.length === 0} onChange={() => setSelectedCats([])} />
+                <input
+                  type="checkbox"
+                  checked={selectedCats.length === 0}
+                  onChange={() => {
+                    setSelectedCats([]);
+                    setSelectedStores([]);
+                  }}
+                />
                 الكل
               </label>
               {CATS.map(cat => (
                 <label key={cat} className="filter-option">
-                  <input type="checkbox" checked={selectedCats.includes(cat)} onChange={() => toggleCat(cat)} />
+                  <input
+                    type="checkbox"
+                    checked={selectedCats.includes(cat)}
+                    onChange={() => {
+                      setAllSelected(false);
+                      toggleCat(cat);
+                    }}
+                  />
                   {cat}
                 </label>
               ))}
@@ -316,6 +404,30 @@ const desc = normalizeText(p.description || "");
                 <span>0 جنيه</span>
                 <span>{maxPrice} جنيه</span>
               </div>
+            </div>
+
+            <hr className="divider" />
+
+            <div className="filter-section">
+              <h4>المتاجر</h4>
+              <label className="filter-option">
+                <input
+                  type="checkbox"
+                  checked={selectedStores.length === 0}
+                  onChange={() => setSelectedStores([])}
+                />
+                الكل
+              </label>
+              {stores.map(store => (
+                <label key={store} className="filter-option">
+                  <input
+                    type="checkbox"
+                    checked={selectedStores.includes(store)}
+                    onChange={() => toggleStore(store)}
+                  />
+                  {store}
+                </label>
+              ))}
             </div>
 
             <hr className="divider" />

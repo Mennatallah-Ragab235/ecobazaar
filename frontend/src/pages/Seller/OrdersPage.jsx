@@ -4,10 +4,11 @@ import SellerLayout from "../../components/Seller/SellerLayout";
 import "../../assets/SellerLayout.css";
 
 const STATUS = {
-  pending:   { label: "قيد الانتظار", cls: "pending" },
-  shipped:   { label: "تم الشحن",     cls: "shipped" },
-  delivered: { label: "تم التسليم",   cls: "delivered" },
-  cancelled: { label: "ملغي",         cls: "cancelled" },
+  pending:    { label: "قيد الانتظار", cls: "pending" },
+  processing: { label: "جاري المعالجة", cls: "processing" },
+  shipped:    { label: "تم الشحن",     cls: "shipped" },
+  delivered:  { label: "تم التسليم",   cls: "delivered" },
+  cancelled:  { label: "ملغي",         cls: "cancelled" },
 };
 
 const fmtDate = (iso) =>
@@ -17,116 +18,98 @@ const fmtDate = (iso) =>
   });
 
 export default function SellerOrders() {
-  const [orders, setOrders]           = useState([]);
-  const [loading, setLoading]         = useState(true);
-  const [filter, setFilter]           = useState("all");
-  const [shipTarget, setShipTarget]   = useState(null);
+  const [subOrders, setSubOrders]       = useState([]);
+  const [loading, setLoading]           = useState(true);
+  const [filter, setFilter]             = useState("all");
+  const [shipTarget, setShipTarget]     = useState(null);
   const [detailTarget, setDetailTarget] = useState(null);
-  const [toast, setToast]             = useState(null);
+  const [toast, setToast]               = useState(null);
 
-
-const shipWithMock = async (order) => {
-  const res = await fetch(`/api/seller/${order._id}/ship`, {
-    method: "PATCH",
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-      "Content-Type": "application/json",
-    },
-  });
-
-  return await res.json();
-};
-
+  // ── FETCH SubOrders الخاصة بالبائع ─────────────────────────────────────
   const fetchOrders = useCallback(async () => {
-  try {
-    setLoading(true);
-
-    const res = await fetch("http://localhost:5000/api/seller/my-orders", {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
-
-    console.log("STATUS:", res.status); // 👈 مهم جدًا
-
-    const text = await res.text();
-    console.log("RAW RESPONSE:", text); // 👈 أهم سطر
-
-    let json;
     try {
-      json = JSON.parse(text);
-    } catch (e) {
-      console.error("NOT JSON RESPONSE");
-      json = [];
+      setLoading(true);
+      const res = await fetch("/api/orders/seller/my-orders", {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      const json = await res.json();
+      setSubOrders(Array.isArray(json) ? json : []);
+    } catch (err) {
+      console.error("FETCH ERROR:", err);
+    } finally {
+      setLoading(false);
     }
-
-    console.log("PARSED:", json);
-
-    setOrders(json.orders || json.data || json || []);
-  } catch (err) {
-    console.error("FETCH ERROR:", err);
-  } finally {
-    setLoading(false);
-  }
-}, []);
+  }, []);
 
   useEffect(() => { fetchOrders(); }, [fetchOrders]);
 
-const handleShip = async (order) => {
-  const shipRes = await shipWithMock(order);
+  // ── SHIP — بيبعت subOrder._id ──────────────────────────────────────────
+  const handleShip = async (subOrder) => {
+    try {
+      const res = await fetch(`/api/orders/seller/${subOrder._id}/ship`, {
+        method:  "PATCH",
+        headers: {
+          Authorization:  `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        },
+      });
 
-  if (!shipRes.success) {
-    alert(shipRes.message || "فشل الشحن");
-    return;
-  }
+      const data = await res.json();
 
-  setOrders((prev) =>
-    prev.map((o) =>
-      o._id === order._id
-        ? { ...o, status: "shipped", trackingNumber: shipRes.trackingNumber }
-        : o
-    )
-  );
+      if (!data.success) {
+        alert(data.message || "فشل الشحن");
+        return;
+      }
 
-  setShipTarget(null);
+      // ✅ بنحدث الـ SubOrder اللي اتشحن بس في الـ state
+      setSubOrders((prev) =>
+        prev.map((o) =>
+          o._id === subOrder._id
+            ? { ...o, status: "shipped", trackingNumber: data.subOrder.trackingNumber }
+            : o
+        )
+      );
 
-  setToast({
-    title: "تم الشحن 🚚",
-    body: shipRes.trackingNumber,
-  });
+      setShipTarget(null);
+      setToast({
+        title: "تم الشحن بنجاح 🚚",
+        body:  `رقم التتبع: ${data.subOrder.trackingNumber}`,
+      });
+      setTimeout(() => setToast(null), 4000);
 
-  setTimeout(() => setToast(null), 3000);
-};
+    } catch (err) {
+      console.error("SHIP ERROR:", err);
+      alert("حدث خطأ أثناء الشحن");
+    }
+  };
 
-
-
+  // ── FILTER ──────────────────────────────────────────────────────────────
   const filtered = filter === "all"
-    ? orders
-    : orders.filter((o) => o.status === filter);
+    ? subOrders
+    : subOrders.filter((o) => o.status === filter);
 
   const counts = {
-    all:       orders.length,
-    pending:   orders.filter((o) => o.status === "pending").length,
-    shipped:   orders.filter((o) => o.status === "shipped").length,
-    delivered: orders.filter((o) => o.status === "delivered").length,
+    all:       subOrders.length,
+    pending:   subOrders.filter((o) => o.status === "pending").length,
+    processing: subOrders.filter((o) => o.status === "processing").length,
+    shipped:   subOrders.filter((o) => o.status === "shipped").length,
+    delivered: subOrders.filter((o) => o.status === "delivered").length,
   };
 
   const TABS = [
-    { key: "all",       label: "الكل" },
-    { key: "pending",   label: "قيد الانتظار" },
-    { key: "shipped",   label: "تم الشحن" },
-    { key: "delivered", label: "تم التسليم" },
+    { key: "all",        label: "الكل" },
+    { key: "pending",    label: "قيد الانتظار" },
+    { key: "processing", label: "جاري المعالجة" },
+    { key: "shipped",    label: "تم الشحن" },
+    { key: "delivered",  label: "تم التسليم" },
   ];
 
   return (
-    <SellerLayout>
-
-      {/* HEADER */}
+<div className="so-page">
       <div className="so-hdr">
         <h1>إدارة الطلبات</h1>
-        <p>متابعة كل طلباتك</p>
+        <p>كل طلب هنا خاص بك أنت فقط</p>
       </div>
-
       {/* STATS */}
       <div className="so-stats">
         <div className="so-stat">
@@ -142,7 +125,6 @@ const handleShip = async (order) => {
           <span className="so-stat-label">✅ تم التسليم</span>
         </div>
       </div>
-
       {/* TABS */}
       <div className="so-tabs">
         {TABS.map((t) => (
@@ -156,7 +138,6 @@ const handleShip = async (order) => {
           </button>
         ))}
       </div>
-
       {/* TABLE */}
       {loading ? (
         <div className="so-loading">جارٍ التحميل...</div>
@@ -165,10 +146,11 @@ const handleShip = async (order) => {
           <table className="so-table">
             <thead>
               <tr>
-                <th>العميل / المتجر</th>
+                <th>العميل</th>
                 <th>المنتجات</th>
-                <th>المبلغ</th>
+                <th>مبلغك</th>
                 <th>الحالة</th>
+                <th>رقم التتبع</th>
                 <th>التاريخ</th>
                 <th>الإجراءات</th>
               </tr>
@@ -176,60 +158,80 @@ const handleShip = async (order) => {
             <tbody>
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="so-empty">لا توجد طلبات</td>
+                  <td colSpan={7} className="so-empty">لا توجد طلبات</td>
                 </tr>
               ) : (
-                filtered.map((order) => (
-                  <tr key={order._id}>
+                filtered.map((subOrder) => (
+                  <tr key={subOrder._id}>
 
-                    {/* العميل / المتجر */}
+                    {/* العميل */}
                     <td>
                       <div className="so-customer-name">
-                        {order.user?.fullName || "—"}
+                        {subOrder.buyer?.fullName || "—"}
                       </div>
                       <div className="so-store-name">
-                        {order.items?.[0]?.product?.seller?.storeName || "—"}
+                        {subOrder.buyer?.phone || ""}
                       </div>
                     </td>
 
                     {/* المنتجات */}
                     <td>
-                      {order.items?.map((item, i) => (
+                      {subOrder.items?.map((item, i) => (
                         <div key={i} className="so-product-line">
                           {item.product?.name} × {item.quantity}
                         </div>
                       ))}
                     </td>
 
-                    {/* المبلغ */}
-                    <td className="so-amount">
-                      {order.total?.toLocaleString("ar-EG")} جنيه
-                    </td>
+                    {/* ✅ مبلغ البائع بس */}
+<td className="so-amount">
+  <div>
+    <strong>
+      {(
+        subOrder.status === "delivered"
+          ? subOrder.netAmount
+          : subOrder.subtotal
+      )?.toLocaleString("ar-EG")} جنيه
+    </strong>
 
-                    {/* الحالة */}
+    <div style={{ fontSize: "12px", color: "#888" }}>
+      {subOrder.status === "delivered"
+        ? "بعد خصم عمولة الموقع"
+        : "قيمة الطلب قبل خصم العمولة"}
+    </div>
+  </div>
+</td>
+
+                    {/* ✅ status الـ SubOrder بتاعه هو */}
                     <td>
-                      <span className={`so-badge ${STATUS[order.status]?.cls}`}>
-                        {STATUS[order.status]?.label}
+                      <span className={`so-badge ${STATUS[subOrder.status]?.cls}`}>
+                        {STATUS[subOrder.status]?.label}
                       </span>
                     </td>
 
+                    {/* رقم التتبع */}
+                    <td className="so-tracking">
+                      {subOrder.trackingNumber || "—"}
+                    </td>
+
                     {/* التاريخ */}
-                    <td className="so-date">{fmtDate(order.createdAt)}</td>
+                    <td className="so-date">{fmtDate(subOrder.createdAt)}</td>
 
                     {/* الإجراءات */}
                     <td>
                       <div className="so-actions">
                         <button
                           className="so-btn-view"
-                          onClick={() => setDetailTarget(order)}
+                          onClick={() => setDetailTarget(subOrder)}
                           title="عرض التفاصيل"
                         >
                           👁
                         </button>
-                        {order.status === "pending" && (
+                        {/* زرار الشحن بيظهر بس لو pending أو processing */}
+                        {(subOrder.status === "pending" || subOrder.status === "processing") && (
                           <button
                             className="so-btn-ship"
-                            onClick={() => setShipTarget(order)}
+                            onClick={() => setShipTarget(subOrder)}
                             title="شحن الطلب"
                           >
                             🚚 شحن
@@ -252,20 +254,23 @@ const handleShip = async (order) => {
           <div className="so-modal" onClick={(e) => e.stopPropagation()}>
             <h3>تأكيد الشحن</h3>
             <p>
-              هل تريد تأكيد شحن الطلب
-              <strong> #{shipTarget._id.slice(-6).toUpperCase()}</strong>؟
+              هل تريد تأكيد شحن الطلب{" "}
+              <strong>#{shipTarget._id.slice(-6).toUpperCase()}</strong>؟
             </p>
+            <div className="so-detail-products" style={{ marginBottom: "12px" }}>
+              {shipTarget.items?.map((item, i) => (
+                <div key={i} className="so-detail-product-row">
+                  <span>{item.product?.name}</span>
+                  <span>× {item.quantity}</span>
+                  <span>{(item.price * item.quantity).toLocaleString("ar-EG")} جنيه</span>
+                </div>
+              ))}
+            </div>
             <div className="so-modal-actions">
-              <button
-                className="so-btn-confirm"
-                onClick={() => handleShip(shipTarget)}
-              >
+              <button className="so-btn-confirm" onClick={() => handleShip(shipTarget)}>
                 🚚 تأكيد الشحن
               </button>
-              <button
-                className="so-btn-cancel"
-                onClick={() => setShipTarget(null)}
-              >
+              <button className="so-btn-cancel" onClick={() => setShipTarget(null)}>
                 إلغاء
               </button>
             </div>
@@ -285,22 +290,20 @@ const handleShip = async (order) => {
             </div>
             <div className="so-detail-row">
               <span>العميل</span>
-              <strong>{detailTarget.user?.fullName}</strong>
+              <strong>{detailTarget.buyer?.fullName}</strong>
             </div>
             <div className="so-detail-row">
-              <span>المتجر</span>
-              <strong>
-                {detailTarget.items?.[0]?.product?.seller?.storeName || "—"}
-              </strong>
+              <span>الهاتف</span>
+              <strong>{detailTarget.buyer?.phone || "—"}</strong>
             </div>
             <div className="so-detail-row">
-              <span>المبلغ الكلي</span>
-              <strong>{detailTarget.total?.toLocaleString("ar-EG")} جنيه</strong>
+              <span>مبلغك</span>
+              <strong>{detailTarget.subtotal?.toLocaleString("ar-EG")} جنيه</strong>
             </div>
             <div className="so-detail-row">
               <span>طريقة الدفع</span>
               <strong>
-                {detailTarget.paymentMethod === "cod"
+                {detailTarget.mainOrder?.paymentMethod === "cod"
                   ? "الدفع عند الاستلام"
                   : "بطاقة ائتمان"}
               </strong>
@@ -311,6 +314,12 @@ const handleShip = async (order) => {
                 {STATUS[detailTarget.status]?.label}
               </span>
             </div>
+            {detailTarget.trackingNumber && (
+              <div className="so-detail-row">
+                <span>رقم التتبع</span>
+                <strong>{detailTarget.trackingNumber}</strong>
+              </div>
+            )}
             <div className="so-detail-row">
               <span>التاريخ</span>
               <strong>{fmtDate(detailTarget.createdAt)}</strong>
@@ -330,17 +339,14 @@ const handleShip = async (order) => {
             <div className="so-detail-address">
               <p className="so-detail-subtitle">عنوان التوصيل:</p>
               <p>
-                {detailTarget.shippingAddress?.fullName} —{" "}
-                {detailTarget.shippingAddress?.address},{" "}
-                {detailTarget.shippingAddress?.city}
+                {detailTarget.mainOrder?.shippingAddress?.fullName} —{" "}
+                {detailTarget.mainOrder?.shippingAddress?.address},{" "}
+                {detailTarget.mainOrder?.shippingAddress?.city}
               </p>
             </div>
 
             <div className="so-modal-actions">
-              <button
-                className="so-btn-cancel"
-                onClick={() => setDetailTarget(null)}
-              >
+              <button className="so-btn-cancel" onClick={() => setDetailTarget(null)}>
                 إغلاق
               </button>
             </div>
@@ -355,7 +361,6 @@ const handleShip = async (order) => {
           <p>{toast.body}</p>
         </div>
       )}
-
-    </SellerLayout>
-  );
-}
+    </div>
+    
+)}

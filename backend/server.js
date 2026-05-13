@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 dotenv.config();
+import bcrypt from "bcryptjs";
 
 import express from "express";
 import mongoose from "mongoose";
@@ -11,7 +12,7 @@ import User from "./models/User.js";
 import paymobRoutes from "./routes/paymobRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import wishlistRoutes from "./routes/wishlistRoutes.js";
-
+import sellerRoutes from "./routes/sellerRoutes.js";
 const app = express();
 
 // middleware
@@ -26,7 +27,7 @@ app.use("/api/cart", cartRoutes);
 app.use("/api/paymob", paymobRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/wishlist", wishlistRoutes);
-
+app.use("/api/seller", sellerRoutes);
 
 const PORT = process.env.PORT || 5000;
 const MONGO_URI =
@@ -34,11 +35,16 @@ const MONGO_URI =
 
 // 🔐 init admin
 const initAdmin = async () => {
-  const adminEmail = "admin@ecobazaar.com";
+  try {
+    const adminEmail = "admin@ecobazaar.com";
 
-  const existingAdmin = await User.findOne({ email: adminEmail });
+    const existingAdmin = await User.findOne({ email: adminEmail });
 
-  if (!existingAdmin) {
+    if (existingAdmin) {
+      console.log("Admin already exists");
+      return;
+    }
+
     const hashedPassword = await bcrypt.hash("admin123", 10);
 
     await User.create({
@@ -50,10 +56,11 @@ const initAdmin = async () => {
     });
 
     console.log("Admin account created");
-  } else {
-    console.log("Admin already exists");
+  } catch (err) {
+    console.error("initAdmin error:", err.message);
   }
 };
+
 
 
 // 🔗 connect MongoDB
@@ -69,5 +76,5 @@ mongoose
   });
 
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(` Server running on port ${PORT}`);
 });

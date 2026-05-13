@@ -206,11 +206,11 @@
 
 /* ==================== PRODUCTS GRID ==================== */
 .products-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
+    display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 24px;
+  align-items: stretch;
 }
-
 @media (max-width: 1000px) {
   .products-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -230,15 +230,19 @@
    ============================================================ */
 
 .product-card {
+  width: 100%;
+  min-height: 420px;
+
   background: #fff;
   border-radius: 16px;
   border: 1px solid #ebebeb;
   overflow: hidden;
-  cursor: pointer;
-  transition: transform 0.22s ease, box-shadow 0.22s ease;
+
   display: flex;
   flex-direction: column;
-  animation: fadeUp 0.4s ease both;
+
+  position: relative;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
 }
 
 .product-card:hover {
@@ -253,12 +257,16 @@
 
 /* --- IMAGE --- */
 .product-image-wrap {
+  width: 100%;
+  min-width: 0;
   position: relative;
   height: 210px;
-  overflow: hidden;
   background: #f5f5f5;
   flex-shrink: 0;
+  overflow: visible; /* مش hidden */
 }
+
+
 
 .product-image-wrap img {
   width: 100%;
@@ -312,12 +320,12 @@
 
 /* --- INFO --- */
 .product-info {
-  padding: 14px 16px 16px;
+  padding: 14px 16px;
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  flex: 1;
-  direction: rtl;
+  gap: 6px;
+
+  flex: 1;   /* 👈 ده اللي بيظبط الطول */
 }
 
 .product-category {
@@ -375,6 +383,8 @@
   align-items: center;
   justify-content: space-between;
   margin-top: 4px;
+      MARGIN-RIGHT: 10PX;
+
 }
 
 .product-prices {
@@ -394,49 +404,6 @@
   color: #bbb;
   text-decoration: line-through;
 }
-
-/* --- CART BUTTON --- */
-.add-to-cart {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  border: none;
-  background: #ffffff; /* أخضر */
-  color: black;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-
-  transition: all 0.25s ease;
-  box-shadow: 0 4px 10px rgba(22, 163, 74, 0.25);
-}
-
-.add-to-cart svg {
-  width: 18px;
-  height: 18px;
-}
-
-/* Hover */
-.add-to-cart:hover {
-  background: #15803d;
-  transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 6px 14px rgba(22, 163, 74, 0.35);
-}
-
-/* Click */
-.add-to-cart:active {
-  transform: scale(0.95);
-  box-shadow: 0 2px 6px rgba(22, 163, 74, 0.2);
-}
-
-/* Disabled (لو حابة تستخدميه بعدين) */
-.add-to-cart:disabled {
-  background: #9ca3af;
-  cursor: not-allowed;
-  box-shadow: none;
-}
-
 
 .reset-filters-btn {
   width: 100%;
@@ -499,3 +466,50 @@
 
 .wishlist-btn:hover { transform: scale(1.12); background: #fff; }
 .wishlist-btn.active { background: #fff0f0; }
+
+/* --- CART BUTTON --- */
+.add-to-cart {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: none;
+
+  background: #fff;
+  color: black;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+
+  margin-top: auto;   /* 👈 ينزل لتحت تلقائي */
+  align-self: flex-start;
+top: 360px;
+  box-shadow: 0 4px 10px rgba(22, 163, 74, 0.25);
+}
+
+.add-to-cart svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Hover */
+.add-to-cart:hover {
+  background: #15803d;
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 6px 14px rgba(22, 163, 74, 0.35);
+}
+
+/* Click */
+.add-to-cart:active {
+  transform: scale(0.95);
+  box-shadow: 0 2px 6px rgba(22, 163, 74, 0.2);
+}
+
+/* Disabled (لو حابة تستخدميه بعدين) */
+.add-to-cart:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  box-shadow: none;
+}

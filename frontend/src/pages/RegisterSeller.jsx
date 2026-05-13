@@ -145,7 +145,7 @@ export default function RegisterSeller() {
 
           <div className="field-group">
             <label>رقم الهاتف <span style={{ color: "#e53935", fontSize: "12px" }}>*</span></label>
-            <input id="phone" type="tel" placeholder="رقم الهاتف" value={form.phone} onChange={set("phone")} dir="ltr" />
+            <input id="phone" type="tel" placeholder="رقم الهاتف" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, "").slice(0, 11) })} dir="ltr" />
           </div>
 
           <div className="section-divider"><span>بيانات المتجر والتحقق</span></div>
@@ -167,7 +167,7 @@ export default function RegisterSeller() {
 
           <div className="field-group">
             <label>الرقم القومي <span style={{ color: "#e53935", fontSize: "12px" }}>*</span></label>
-            <input id="nationalIdNumber" type="text" placeholder="رقم البطاقة الوطنية للتحقق" value={form.nationalIdNumber} onChange={set("nationalIdNumber")} dir="ltr" />
+            <input id="nationalIdNumber" type="text" placeholder="رقم البطاقة الوطنية للتحقق" value={form.nationalIdNumber} onChange={(e) => setForm({ ...form, nationalIdNumber: e.target.value.replace(/\D/g, "").slice(0, 14) })} dir="ltr" />
           </div>
 
           <div className="field-group" id="nationalIdImageGroup">

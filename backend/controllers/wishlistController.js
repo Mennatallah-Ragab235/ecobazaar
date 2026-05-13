@@ -3,7 +3,7 @@ import Wishlist from "../models/Wishlist.js";
 // جيب المفضلة
 export const getWishlist = async (req, res) => {
   try {
-    const wishlist = await Wishlist.findOne({ user: req.user._id })
+    const wishlist = await Wishlist.findOne({ user: req.user._id || req.user.id, })
       .populate("products");
     res.json(wishlist?.products || []);
   } catch (err) {
@@ -15,11 +15,11 @@ export const getWishlist = async (req, res) => {
 export const toggleWishlist = async (req, res) => {
   try {
     const { productId } = req.body;
-    let wishlist = await Wishlist.findOne({ user: req.user._id });
+    let wishlist = await Wishlist.findOne({ user: req.user._id || req.user.id });
 
     if (!wishlist) {
       wishlist = await Wishlist.create({
-        user: req.user._id,
+        user: req.user._id || req.user.id,
         products: [productId]
       });
       return res.json({ added: true, wishlist });

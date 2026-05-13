@@ -1,4 +1,4 @@
-import "../../assets/Admin.css";
+import "../../assets/AdminLayout.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   FaThLarge, FaBox, FaShoppingCart,
@@ -11,10 +11,10 @@ function Aside() {
 
   const menuItems = [
     { icon: <FaThLarge />, label: "لوحة التحكم", path: "/admin" },
-    { icon: <FaBox />, label: "المنتجات", path: "/admin/products" },
+    { icon: <FaBox />,     label: "المنتجات",    path: "/admin/products" },
     { icon: <FaShoppingCart />, label: "الطلبات", path: "/admin/orders" },
-    { icon: <FaStore />, label: "البائعين", path: "/admin/sellers" },
-    { icon: <FaUsers />, label: "المشترين", path: "/admin/buyers" },
+    { icon: <FaStore />,   label: "البائعين",    path: "/admin/sellers" },
+    { icon: <FaUsers />,   label: "المشترين",    path: "/admin/buyers" },
   ];
 
   const handleLogout = () => {
@@ -23,27 +23,23 @@ function Aside() {
   };
 
   return (
-    <aside className="sidebar">
-      <div>
-        <ul>
-          {menuItems.map((item) => (
-            <li
-              key={item.path}
-              className={location.pathname === item.path ? "active" : ""}
-              onClick={() => navigate(item.path)}
-              style={{ cursor: "pointer" }}
-            >
-              <span className="icon">{item.icon}</span>
-              {item.label}
-            </li>
-          ))}
-        </ul>
-      </div>
-      <div className="bottom">
-        <span className="logout" onClick={handleLogout} style={{ cursor: "pointer" }}>
-          <FaSignOutAlt className="icon" />
-          <p>تسجيل الخروج</p>
-        </span>
+    <aside className="AdminSidebar">
+      <nav className="ap-nav">
+        {menuItems.map((item) => (
+          <div
+            key={item.path}
+            className={`ap-nav-item ${location.pathname === item.path ? "active" : ""}`}
+            onClick={() => navigate(item.path)}
+          >
+            <span className="ap-nav-icon">{item.icon}</span>
+            {item.label}
+          </div>
+        ))}
+      </nav>
+
+      <div id="ap-nav-logout" onClick={handleLogout}>
+        <span className="ap-nav-icon"><FaSignOutAlt /></span>
+        تسجيل الخروج
       </div>
     </aside>
   );

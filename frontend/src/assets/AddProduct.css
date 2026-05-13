@@ -589,3 +589,32 @@
   border-radius: 6px;
   font-weight: 500;
 }
+
+.ap-discount-preview{
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.old-price{
+  text-decoration: line-through;
+  color: #888;
+  font-size: 18px;
+}
+
+.new-price{
+  color: #1c8c4c;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.discount-badge{
+  background: #e53935;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: bold;
+}

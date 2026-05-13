@@ -130,12 +130,27 @@ const total = Number((subtotal + shippingPrice).toFixed(2));
 
 const [paymentDone, setPaymentDone] = useState(false);
 
-
+// ✅ helper مشترك لتفريغ السلة
+const clearCartAPI = async () => {
+  try {
+    const res = await fetch("/api/cart/clear", {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (res.ok) {
+      setCartCount(0);
+      if (refreshCart) await refreshCart();
+    } else {
+      console.error("Clear cart failed:", await res.text());
+    }
+  } catch (err) {
+    console.error("Clear cart error:", err);
+  }
+};
 
 const handlePaymentSuccess = async () => {
   if (paymentDone) return;
   setPaymentDone(true);
-
   try {
     await fetch(`/api/orders/${orderId}/pay`, {
       method: "PATCH",
@@ -144,21 +159,8 @@ const handlePaymentSuccess = async () => {
         Authorization: `Bearer ${token}`,
       },
     });
-
-    await fetch("/api/cart/clear", {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    setCartCount(0);
-    await refreshCart();
-
-    navigate("/order-success", {
-      state: { orderId },
-    });
-
+    await clearCartAPI();
+    navigate("/order-success", { state: { orderId } });
   } catch (err) {
     console.error(err);
   }
@@ -202,7 +204,8 @@ const handleConfirm = async () => {
       return; // ❗ متعملش redirect
     }
 
-    // COD فقط
+    // COD — فرّغ السلة ثم navigate
+    await clearCartAPI();
     navigate("/order-success", {
       state: { orderId: newOrderId },
     });
@@ -250,7 +253,7 @@ const handleConfirm = async () => {
               <h3 className="box-title">📍 عنوان التوصيل</h3>
               <div className="form-grid">
                 <div className="full">
-                  <label>الاسم الأول</label>
+                  <label>الاسم الأول<span style={{ color: "#e53935", fontSize: "12px" }}>*</span></label>
                   <input
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
@@ -259,7 +262,7 @@ const handleConfirm = async () => {
                   />
                 </div>
                 <div className="full">
-                  <label>الاسم الأخير</label>
+                  <label>الاسم الأخير<span style={{ color: "#e53935", fontSize: "12px" }}>*</span></label>
                   <input
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
@@ -268,7 +271,7 @@ const handleConfirm = async () => {
                   />
                 </div>
                 <div className="full">
-                  <label>رقم الهاتف</label>
+                  <label>رقم الهاتف<span style={{ color: "#e53935", fontSize: "12px" }}>*</span></label>
                   <input
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
@@ -277,7 +280,7 @@ const handleConfirm = async () => {
                   />
                 </div>
                 <div className="full">
-                  <label>العنوان بالتفصيل</label>
+                  <label>العنوان بالتفصيل<span style={{ color: "#e53935", fontSize: "12px" }}>*</span></label>
                   <input
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
@@ -286,7 +289,7 @@ const handleConfirm = async () => {
                   />
                 </div>
                 <div>
-                  <label>المدينة</label>
+                  <label>المدينة<span style={{ color: "#e53935", fontSize: "12px" }}>*</span></label>
                   <input
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
@@ -295,12 +298,12 @@ const handleConfirm = async () => {
                   />
                 </div>
                 <div>
-                  <label>الرمز البريدي</label>
+                  <label>الرمز البريدي<span style={{ color: "#e53935", fontSize: "12px" }}>*</span></label>
                   <input
-                    value={zip}
-                    onChange={(e) => setZip(e.target.value)}
-                    placeholder="12345"
-                  />
+  value={zip}
+  onChange={(e) => setZip(e.target.value.replace(/\D/g, "").slice(0, 5))}
+  placeholder="12345"
+/>
                 </div>
               </div>
             </div>

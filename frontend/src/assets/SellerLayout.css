@@ -41,11 +41,6 @@ body {
   box-shadow: 0 1px 4px rgba(0,0,0,0.06);
 }
 
-.ap-navbar-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
 
 .ap-logo-icon { font-size: 26px; }
 
@@ -113,8 +108,8 @@ body {
   display: flex;
   flex: 1;
   min-height: 0;        /* مهم جداً عشان flex child يتمدد صح */
-  overflow: hidden;
-  /* RTL: السايدبار على اليمين تلقائياً */
+
+  overflow: visible; 
 }
 
 /* =====================================================
@@ -195,10 +190,11 @@ body {
    ===================================================== */
 .seller-content {
   flex: 1;
-  min-width: 0;         /* يمنع overflow */
+  min-width: 0;
   overflow-y: auto;
   padding: 24px;
   background: #f1f5f1;
+  height: 100%;
 }
 
 /* =====================================================
@@ -300,3 +296,22 @@ body {
     display: none;   /* اخفي السايدبار على موبايل صغير */
   }
 }
+
+.ap-navbar-left{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* اللوجو فقط */
+.ap-logo{
+    width: 85px;
+    height: 85px;
+    object-fit: contain;
+
+    /* يمنع ضغط الصورة */
+    flex-shrink: 0;
+        padding: 10px;
+
+}
+

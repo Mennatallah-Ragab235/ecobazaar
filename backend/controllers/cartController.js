@@ -4,11 +4,15 @@ import Product from "../models/product.js";
 // GET /api/cart
 export const getCart = async (req, res) => {
   try {
-    const cart = await Cart.findOne({ user: req.user._id }).populate(
+    const cart = await Cart.findOne({
+      user: req.user._id || req.user.id,
+    }).populate(
       "items.product",
-      "name price originalPrice image images"
+      "name price originalPrice image images seller" // 🔥 هنا التعديل
     );
+
     if (!cart) return res.json({ items: [] });
+
     res.json(cart);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -23,10 +27,10 @@ export const addToCart = async (req, res) => {
     const product = await Product.findById(productId);
     if (!product) return res.status(404).json({ error: "المنتج غير موجود" });
 
-    let cart = await Cart.findOne({ user: req.user._id });
+    let cart = await Cart.findOne({ user: req.user._id || req.user.id });
 
     if (!cart) {
-      cart = new Cart({ user: req.user._id, items: [] });
+      cart = new Cart({ user: req.user._id || req.user.id, items: [] });
     }
 
     const existingItem = cart.items.find(
@@ -40,7 +44,8 @@ export const addToCart = async (req, res) => {
     }
 
     await cart.save();
-    await cart.populate("items.product", "name price originalPrice image images");
+    await cart.populate("items.product", "name price originalPrice image images seller")
+;
     res.json(cart);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -54,7 +59,7 @@ export const updateCartItem = async (req, res) => {
 
     if (quantity < 1) return res.status(400).json({ error: "الكمية يجب أن تكون 1 على الأقل" });
 
-    const cart = await Cart.findOne({ user: req.user._id });
+    const cart = await Cart.findOne({ user: req.user._id || req.user.id });
     if (!cart) return res.status(404).json({ error: "السلة غير موجودة" });
 
     const item = cart.items.find((i) => i.product.toString() === productId);
@@ -62,7 +67,7 @@ export const updateCartItem = async (req, res) => {
 
     item.quantity = quantity;
     await cart.save();
-    await cart.populate("items.product", "name price originalPrice image images");
+await cart.populate("items.product", "name price originalPrice image images seller");
     res.json(cart);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -74,12 +79,12 @@ export const removeFromCart = async (req, res) => {
   try {
     const { productId } = req.params;
 
-    const cart = await Cart.findOne({ user: req.user._id });
+    const cart = await Cart.findOne({ user: req.user._id || req.user.id });
     if (!cart) return res.status(404).json({ error: "السلة غير موجودة" });
 
     cart.items = cart.items.filter((i) => i.product.toString() !== productId);
     await cart.save();
-    await cart.populate("items.product", "name price originalPrice image images");
+await cart.populate("items.product", "name price originalPrice image images seller");
     res.json(cart);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -89,8 +94,14 @@ export const removeFromCart = async (req, res) => {
 // DELETE /api/cart/clear
 export const clearCart = async (req, res) => {
   try {
-    await Cart.findOneAndUpdate({ user: req.user._id }, { items: [] });
-    res.json({ message: "تم تفريغ السلة" });
+    const userId = req.user._id || req.user.id;
+    const result = await Cart.findOneAndUpdate(
+      { user: userId },
+      { $set: { items: [] } },
+      { new: true }
+    );
+    if (!result) return res.status(404).json({ error: "السلة غير موجودة" });
+    res.json({ message: "تم تفريغ السلة", cart: result });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

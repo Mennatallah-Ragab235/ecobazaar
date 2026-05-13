@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { FaEye, FaSpinner, FaUndo, FaTimes } from "react-icons/fa";
 import "../../assets/Admin.css";
+import AdminLayout from "../../components/Admin/AdminLayout";
+import "../../assets/AdminLayout.css";
+
 
 const STATUS_LABELS = {
   pending: { label: "قيد الانتظار", className: "status-pending" },
@@ -75,10 +78,14 @@ const getStoreNames = (order) => {
   if (!order.items?.length) return "—";
 
   const names = order.items
-    .map((i) => i.seller?.storeName || i.seller?.fullName)
+    .map(
+      (i) =>
+        i.product?.seller?.storeName ||
+        i.product?.seller?.fullName
+    )
     .filter(Boolean);
 
-  return [...new Set(names)].join(" , ") || "—";
+  return [...new Set(names)].join(" ، ") || "—";
 };
 
 
@@ -98,7 +105,9 @@ const getStoreNames = (order) => {
   };
 
   return (
-    <main className="dashboard" dir="rtl">
+
+
+ <main className="dashboard" dir="rtl">
       <h2 className="page-title">إدارة الطلبات</h2>
 
       {/* ================= FILTER ================= */}
@@ -291,8 +300,8 @@ const getStoreNames = (order) => {
                   <li key={i}>
                     <span>{item.product?.name}</span>
                     <span>
-                      {item.seller?.storeName ||
-                        item.seller?.fullName}
+                     {item.product?.seller?.storeName ||
+ item.product?.seller?.fullName}
                     </span>
                     <span>x{item.quantity}</span>
                     <span>{item.price} ج.م</span>
@@ -313,6 +322,9 @@ const getStoreNames = (order) => {
         </div>
       )}
     </main>
+
+
+   
   );
 }
 

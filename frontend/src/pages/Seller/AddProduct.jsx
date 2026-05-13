@@ -40,6 +40,7 @@ export default function AddProduct() {
     description: "",
     category: "",
     price: "",
+    discount: "", 
     quantity: "0",
     sku: "",
     certificates: "",
@@ -56,6 +57,7 @@ export default function AddProduct() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const fileInputRef = useRef();
   const dropdownRef  = useRef(null);
+const [successMsg, setSuccessMsg] = useState("");
 
   // ✅ لو storeName مش موجود في localStorage، اجلبه من الـ API
   useEffect(() => {
@@ -88,6 +90,10 @@ export default function AddProduct() {
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
+  const finalPrice =
+  form.price && form.discount
+    ? Number(form.price) - (Number(form.price) * Number(form.discount)) / 100
+    : form.price;
   const toggleFeature = (id) =>
     setSelectedFeatures((prev) =>
       prev.includes(id) ? prev.filter((f) => f !== id) : [...prev, id]
@@ -126,11 +132,13 @@ export default function AddProduct() {
       formData.append("price",        Number(form.price));
       formData.append("quantity",     Number(form.quantity));
       formData.append("weight",       Number(form.weight));
+      formData.append("discount", Number(form.discount || 0));
+formData.append("finalPrice", Number(finalPrice || form.price));
       formData.append("sku",          form.sku);
       formData.append("certificates", form.certificates);
       formData.append("materials",    form.materials);
       formData.append("origin",       form.origin);
-      formData.append("status",       "pending");
+      
       selectedFeatures.forEach((f) => formData.append("ecoFeatures[]", f));
       images.forEach((img) => formData.append("images", img.file));
 
@@ -144,6 +152,11 @@ export default function AddProduct() {
       if (!res.ok) throw new Error(data.error || data.message || "فشل إضافة المنتج");
 
       setSubmitted(true);
+      setSuccessMsg(
+  data.status === "approved"
+    ? "✅ تم نشر المنتج فوراً!"
+    : "⏳ تم إرسال المنتج للمراجعة — سيظهر بعد موافقة الأدمن"
+);
       setTimeout(() => {
         setSubmitted(false);
         setForm({
@@ -179,7 +192,6 @@ export default function AddProduct() {
   };
 
   return (
-      <SellerLayout>
         <main className="ap-main">
 
           <div className="ap-topbar">
@@ -192,11 +204,11 @@ export default function AddProduct() {
             </div>
           </div>
 
-          {submitted && (
-            <div className="ap-alert green" style={{ marginBottom: 20 }}>
-              <strong>✅ تم إرسال المنتج للمراجعة! سيتم نشره بعد موافقة الإدارة.</strong>
-            </div>
-          )}
+         {submitted && (
+  <div className="ap-alert green" style={{ marginBottom: 20 }}>
+    <strong>{successMsg}</strong>
+  </div>
+)}
 
           {error && (
             <div className="ap-alert red" style={{ marginBottom: 20 }}>
@@ -279,12 +291,73 @@ export default function AddProduct() {
                   </select>
                   <span className="ap-hint">اختر الفئة الأنسب لتسهيل عثور العملاء على منتجك</span>
                 </div>
-                <div className="ap-col">
-                  <label className="ap-label">السعر (جنيه) <span className="ap-required">*</span></label>
-                  <input className="ap-input" type="number" name="price" value={form.price}
-                    onChange={handleChange} placeholder="0.00" min="0" step="0.01" required />
-                  <span className="ap-hint">حدد سعرًا تنافسيًا يعكس القيمة والجودة البيئية</span>
-                </div>
+                <div className="ap-row">
+
+  {/* السعر الأساسي */}
+  <div className="ap-col">
+    <label className="ap-label">
+      السعر الأصلي (جنيه)
+      <span className="ap-required">*</span>
+    </label>
+
+    <input
+      className="ap-input"
+      type="number"
+      name="price"
+      value={form.price}
+      onChange={handleChange}
+      placeholder="0.00"
+      min="0"
+      step="0.01"
+      required
+    />
+  </div>
+
+  {/* الخصم */}
+  <div className="ap-col">
+    <label className="ap-label">
+      نسبة الخصم %
+    </label>
+
+    <input
+      className="ap-input"
+      type="number"
+      name="discount"
+      value={form.discount}
+      onChange={handleChange}
+      placeholder="مثال: 20"
+      min="0"
+      max="100"
+    />
+  </div>
+
+</div>
+
+{form.price && (
+  <div className="ap-discount-preview">
+    
+    {form.discount ? (
+      <>
+        <span className="old-price">
+          {Number(form.price).toFixed(2)} جنيه
+        </span>
+
+        <span className="new-price">
+          {Number(finalPrice).toFixed(2)} جنيه
+        </span>
+
+        <span className="discount-badge">
+          خصم {form.discount}%
+        </span>
+      </>
+    ) : (
+      <span className="new-price">
+        {Number(form.price).toFixed(2)} جنيه
+      </span>
+    )}
+
+  </div>
+)}
               </div>
 
               <div className="ap-row">
@@ -408,11 +481,11 @@ export default function AddProduct() {
             {/* أزرار */}
             <div className="ap-actions">
               <button type="submit" className="ap-submit-btn" disabled={loading || submitted}>
-                {submitted
-                  ? "✅ تم الإرسال للمراجعة!"
-                  : loading
-                  ? "⏳ جاري الإرسال..."
-                  : "+ إضافة المنتج"}
+               {submitted
+  ? successMsg.includes("فوراً") ? "✅ تم النشر!" : "✅ تم الإرسال للمراجعة!"
+  : loading
+  ? "⏳ جاري الإرسال..."
+  : "+ إضافة المنتج"}
               </button>
               <button type="button" className="ap-cancel-btn"
                 onClick={() => navigate("/")}>إلغاء</button>
@@ -422,88 +495,7 @@ export default function AddProduct() {
         </main>
  
 
-      </SellerLayout>
      );
 }
 
 
-
-
-//  {/* ── Navbar ── */}
-//       <div className="ap-navbar">
-//         <div className="ap-navbar-left">
-//           <span className="ap-logo-icon">🌿</span>
-//           <div>
-//             <div className="ap-logo-name">EcoBazaar</div>
-//             <div className="ap-logo-sub">لوحة البائع</div>
-//           </div>
-//         </div>
-
-//         <div className="ap-navbar-right">
-//           <div className="profile-wrapper" ref={dropdownRef}>
-//             <button className="nav-btn user-btn" onClick={handleProfileClick}>
-//               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-//                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-//                 <circle cx="12" cy="7" r="4"/>
-//               </svg>
-//             </button>
-
-//             {dropdownOpen && user && (
-//               <div className="profile-dropdown">
-//                 <div className="dropdown-user-info">
-//                   <div className="dropdown-avatar">
-//                     {user.fullName?.charAt(0)?.toUpperCase() || "U"}
-//                   </div>
-//                   <div>
-//                     <div className="dropdown-name">{user.fullName}</div>
-//                     <div className="dropdown-email">{user.email}</div>
-//                   </div>
-//                 </div>
-//                 <div className="dropdown-divider" />
-//                 <button className="dropdown-item" onClick={() => { setDropdownOpen(false); navigate("/profile"); }}>
-//                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
-//                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-//                   </svg>
-//                   الملف الشخصي
-//                 </button>
-//                 <button className="dropdown-item" onClick={handleDashboard}>
-//                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
-//                     <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-//                     <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
-//                   </svg>
-//                   لوحة البائع
-//                 </button>
-//                 <div className="dropdown-divider" />
-//                 <button className="dropdown-item logout-item" onClick={handleLogout}>
-//                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
-//                     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-//                     <polyline points="16 17 21 12 16 7"/>
-//                     <line x1="21" y1="12" x2="9" y2="12"/>
-//                   </svg>
-//                   تسجيل الخروج
-//                 </button>
-//               </div>
-//             )}
-//           </div>
-//         </div>
-//       </div>
-
-
-
-  // {/* Sidebar */}
-  //       <aside className="ap-sidebar">
-  //         <nav className="ap-nav">
-  //           {navItems.map((item) => (
-  //             <div
-  //               key={item.label}
-  //               className={`ap-nav-item ${item.active ? "active" : ""}`}
-  //               onClick={() => item.path && navigate(item.path)}
-  //               style={{ cursor: "pointer" }}
-  //             >
-  //               <span className="ap-nav-icon">{item.icon}</span>
-  //               <span>{item.label}</span>
-  //             </div>
-  //           ))}
-  //         </nav>
-  //         <span id="ap-nav-logout" onClick={handleLogout}>← تسجيل الخروج</span>
-  //       </aside>

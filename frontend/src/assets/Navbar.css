@@ -91,6 +91,17 @@
   transition: color 0.2s;
 }
 
+.nav-links span {
+  cursor: pointer;
+  color: #262525;
+  font-size: 15px;
+  margin: 0 10px;
+  transition: 0.2s;
+}
+
+.nav-links span:hover {
+  color: #2e7d32;
+}
 .nav-links a:hover {
   color: var(--green-primary);
 }
@@ -239,4 +250,22 @@
 .logout-item:hover {
   background: #fff5f5 !important;
   color: #c0392b !important;
+}
+
+.ap-navbar-left{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* اللوجو فقط */
+.ap-logo{
+    height: 66px;
+    height: 85px;
+    object-fit: contain;
+
+    /* يمنع ضغط الصورة */
+    flex-shrink: 0;
+        padding: 5px;
+
 }

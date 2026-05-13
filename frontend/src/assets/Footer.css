@@ -98,3 +98,19 @@
   font-size: 14px;
   color: var(--text-light);
 }
+
+.footer-col ul li {
+  cursor: pointer;
+  padding: 6px 0;
+  transition: 0.2s;
+  list-style: none;
+}
+
+.footer-col ul li:hover {
+  color: #2ecc71;
+  transform: translateX(-3px);
+}
+
+.footer-col ul li:active {
+  transform: scale(0.97);
+}

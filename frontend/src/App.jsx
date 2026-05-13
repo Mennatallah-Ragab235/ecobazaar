@@ -15,16 +15,16 @@ import RegisterBuyer from "./pages/RegisterBuyer";
 import RegisterSeller from "./pages/RegisterSeller";
 
 import AddProduct from "./pages/Seller/AddProduct";
-import Header from "./components/Admin/Header";
-import Dashboard from "./components/Admin/Dashboard";
-import Aside from "./components/Admin/Aside";
+import Dashboard from "./pages/Admin/Dashboard";
 import AdminOrders from "./pages/Admin/AdminOrders";
 import AdminSellers from "./pages/Admin/AdminSellers";
 import AdminBuyers from "./pages/Admin/AdminBuyers";
-import AdminProducts from "./pages/Admin/AdminProducts"; // أو المسار عندك
+import AdminProducts from "./pages/Admin/AdminProducts";
 
 import SellerProducts from "./pages/Seller/SellerProducts";
 import SellerOrders from "./pages/Seller/OrdersPage";
+import SellerRevenue from "./pages/Seller/SellerRevenue";
+
 import ProductsPage from "./pages/ProductsPage";
 import CartPage from "./pages/CartPage";
 import Checkout from "./pages/Checkout";
@@ -32,32 +32,31 @@ import ProductDetailsPage from "./pages/ProductDetailsPage";
 import OrderSuccess from "./pages/OrderSuccess";
 import Profile from "./pages/Profile";
 import OrderDetails from "./pages/OrderDetails";
-
-
+import SellerLayout from "./components/Seller/SellerLayout";
+import AdminLayout from "./components/Admin/AdminLayout"; // ← شيله
+import About from "./pages/Policies/About";
+import Contact from "./pages/Policies/ContactUs";
+import ReturnPolicy  from "./pages/Policies/ReturnPolicy";
+import PrivacyPolicy from "./pages/Policies/PrivacyPolicy";
+import SellersPolicy from "./pages/Policies/SellersPolicy";
+import EscrowPolicy  from "./pages/Policies/EscrowPolicy";
 
 import "./App.css";
-
-
-
-const clearCartUI = () => {
-  setCartCount(0);
-};
 
 const AUTH_ROUTES = ["/login", "/register/buyer", "/register/seller"];
 const API_URL = "http://localhost:5000";
 
-/* ================= LAYOUT ================= */
+/* ── Layout ── */
 function Layout({ children, cartCount, searchVal, setSearchVal }) {
   const location = useLocation();
 
   const isAuth = AUTH_ROUTES.includes(location.pathname);
-
   const isSellerOrAdmin =
     location.pathname.toLowerCase().startsWith("/seller") ||
     location.pathname.toLowerCase().startsWith("/admin");
 
   return (
-    <div className="app" dir="ltr">
+    <div className="app" dir="rtl">
       {!isAuth && !isSellerOrAdmin && (
         <Navbar
           cartCount={cartCount}
@@ -73,7 +72,7 @@ function Layout({ children, cartCount, searchVal, setSearchVal }) {
   );
 }
 
-/* ================= HOME ================= */
+/* ── Home ── */
 function HomePage({ onAddToCart, searchVal, selectedCategory, setSelectedCategory }) {
   return (
     <>
@@ -94,63 +93,31 @@ function HomePage({ onAddToCart, searchVal, selectedCategory, setSelectedCategor
   );
 }
 
-/* ================= ADMIN LAYOUT ================= */
-function AdminLayout({ children }) {
-  return (
-    <div className="admin-page">
-      <Header />
-      <div className="admin-body">
-        <Aside />
-        <div className="admin-content">
-          {children}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ================= APP ================= */
+/* ── App ── */
 function App() {
-  const [cartCount, setCartCount] = useState(0);
-  const [searchVal, setSearchVal] = useState("");
+  const [cartCount, setCartCount]           = useState(0);
+  const [searchVal, setSearchVal]           = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
 
-  /* ================= GET CART COUNT ================= */
- const fetchCartCount = useCallback(async () => {
-  const token = localStorage.getItem("token");
+  const fetchCartCount = useCallback(async () => {
+    const token = localStorage.getItem("token");
+    if (!token) { setCartCount(0); return; }
+    try {
+      const res = await fetch(`${API_URL}/api/cart`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) { setCartCount(0); return; }
+      const data = await res.json();
+      const count = (data.items || []).reduce((sum, item) => sum + item.quantity, 0);
+      setCartCount(count);
+    } catch (err) {
+      console.error("Cart fetch error:", err);
+    }
+  }, []);
 
-  if (!token) {
-    setCartCount(0);
-    return;
-  }
-
-  try {
-    const res = await fetch(`${API_URL}/api/cart`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    if (!res.ok) return;
-
-    const data = await res.json();
-
-    const count = (data.items || []).reduce(
-      (sum, item) => sum + item.quantity,
-      0
-    );
-
-    setCartCount(count); // ✅ ده المهم
-  } catch (err) {
-    console.error("Cart fetch error:", err);
-  }
-}, []);
-
-  /* ================= ADD TO CART ================= */
   const addToCart = async (product) => {
     const token = localStorage.getItem("token");
-    if (!token) {
-      window.location.href = "/login";
-      return;
-    }
+    if (!token) { window.location.href = "/login"; return; }
     try {
       await fetch(`${API_URL}/api/cart/add`, {
         method: "POST",
@@ -165,9 +132,8 @@ function App() {
       console.error("Add to cart error:", err);
     }
   };
-useEffect(() => {
-  fetchCartCount();
-}, [fetchCartCount]);
+
+  useEffect(() => { fetchCartCount(); }, [fetchCartCount]);
 
   return (
     <BrowserRouter>
@@ -177,84 +143,58 @@ useEffect(() => {
         setSearchVal={setSearchVal}
       >
         <Routes>
-          {/* ========== HOME ========== */}
-          <Route
-            path="/"
-            element={
-              <HomePage
-                onAddToCart={addToCart}
-                searchVal={searchVal}
-                selectedCategory={selectedCategory}
-                setSelectedCategory={setSelectedCategory}
-              />
-            }
-          />
 
-          {/* ========== AUTH ========== */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/register/buyer" element={<RegisterBuyer />} />
-          <Route path="/register/seller" element={<RegisterSeller />} />
+          {/* ── Home ── */}
+          <Route path="/" element={
+            <HomePage
+              onAddToCart={addToCart}
+              searchVal={searchVal}
+              selectedCategory={selectedCategory}
+              setSelectedCategory={setSelectedCategory}
+            />
+          } />
 
-          {/* ========== SELLER ========== */}
-          <Route path="/seller/addproduct" element={<AddProduct />} />
-          <Route path="/seller/products" element={<SellerProducts />} />
-<Route path="/seller/orders" element={<SellerOrders />} />
-          {/* ========== ADMIN ========== */}
-          <Route
-            path="/admin"
-            element={
-              <AdminLayout>
-                <Dashboard />
-              </AdminLayout>
-            }
-          />
-          <Route
-            path="/admin/orders"
-            element={
-              <AdminLayout>
-                <AdminOrders />
-              </AdminLayout>
-            }
-          />
-          <Route
-            path="/admin/sellers"
-            element={
-              <AdminLayout>
-                <AdminSellers />
-              </AdminLayout>
-            }
-          />
-          <Route
-            path="/admin/buyers"
-            element={
-              <AdminLayout>
-                <AdminBuyers />
-              </AdminLayout>
-            }
-          />
+          {/* ── Auth ── */}
+          <Route path="/login"            element={<Login />} />
+          <Route path="/register/buyer"   element={<RegisterBuyer />} />
+          <Route path="/register/seller"  element={<RegisterSeller />} />
 
- <Route
-            path="/admin/products"
-            element={
-              <AdminLayout>
-                <AdminProducts />
-              </AdminLayout>
-            }
-          />
-          {/* ========== SHOP ========== */}
-          <Route path="/product/:id" element={<ProductDetailsPage />} />
-          <Route
-            path="/products"
-            element={<ProductsPage onAddToCart={addToCart} searchVal={searchVal} />}
-          />
-          <Route path="/cart" element={<CartPage refreshCart={fetchCartCount} />} />
-          <Route path="/checkout" element={<Checkout
-  refreshCart={fetchCartCount}
-  setCartCount={setCartCount}
-/>} />
-          <Route path="/order-success" element={<OrderSuccess />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/order/:id" element={<OrderDetails />} />
+
+{/* ── Seller ── */}
+<Route path="/seller" element={<SellerLayout />}>
+  <Route path="products"   element={<SellerProducts />} />
+  <Route path="orders"     element={<SellerOrders />} />
+  <Route path="revenue"    element={<SellerRevenue />} />
+  <Route path="addproduct" element={<AddProduct />} />
+</Route>
+
+
+<Route path="/admin" element={<AdminLayout />}>
+  <Route index         element={<Dashboard />} />
+  <Route path="orders"   element={<AdminOrders />} />
+  <Route path="sellers"  element={<AdminSellers />} />
+  <Route path="buyers"   element={<AdminBuyers />} />
+  <Route path="products" element={<AdminProducts />} />
+</Route>
+
+
+          {/* ── Shop ── */}
+          <Route path="/products"          element={<ProductsPage onAddToCart={addToCart} searchVal={searchVal} />} />
+          <Route path="/product/:id"       element={<ProductDetailsPage />} />
+          <Route path="/cart"              element={<CartPage refreshCart={fetchCartCount} />} />
+          <Route path="/checkout"          element={<Checkout refreshCart={fetchCartCount} setCartCount={setCartCount} />} />
+          <Route path="/order-success"     element={<OrderSuccess />} />
+          <Route path="/order/:id"         element={<OrderDetails />} />
+          <Route path="/profile"           element={<Profile />} />
+   
+{/* ── Pages ── */}
+<Route path="/policies/about" element={<About />} />
+<Route path="/policies/contact" element={<Contact />} />
+<Route path="/policies/return-policy"  element={<ReturnPolicy />} />
+<Route path="/policies/privacy-policy" element={<PrivacyPolicy />} />
+<Route path="/policies/sellers-policy" element={<SellersPolicy />} />
+<Route path="/policies/escrow-policy"  element={<EscrowPolicy />} />
+ 
         </Routes>
       </Layout>
     </BrowserRouter>
@@ -262,4 +202,3 @@ useEffect(() => {
 }
 
 export default App;
-

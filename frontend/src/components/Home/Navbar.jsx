@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../assets/Navbar.css";
+// import logo from "../../../public/images/Logo.png";
 
 export default function Navbar({ cartCount, searchVal, setSearchVal }) {
   const handleSearchChange = (e) => setSearchVal(e.target.value);
@@ -57,12 +58,14 @@ const handleKeyDown = (e) => {
     <nav className="navbar">
       <div className="navbar-inner">
         <div className="nav-logo">
-          <div className="logo-icon">
-            <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="20" cy="20" r="20" fill="#e8f5e9"/>
-              <path d="M20 8C13.4 8 8 13.4 8 20s5.4 12 12 12 12-5.4 12-12S26.6 8 20 8zm-2 17l-5-5 1.4-1.4L18 22.2l7.6-7.6L27 16l-9 9z" fill="#2d7a3a"/>
-            </svg>
-          </div>
+          <div className="ap-navbar-left">
+     <img src="/images/Logo.png"  
+        
+        alt="EcoBazaar Logo"
+        className="ap-logo"
+    />
+
+</div>
           <span className="logo-text" onClick={() => navigate("/")} >EcoBazaar</span>
         </div>
 
@@ -80,11 +83,11 @@ const handleKeyDown = (e) => {
 
         </div>
 
-        <div className="nav-links">
-          <a href="#contact">اتصل بنا</a>
-          <a href="#about">من نحن</a>
-          <a href="#featured-products">المنتجات</a>
-        </div>
+    <div className="nav-links">
+  <span onClick={() => navigate("/about")}>من نحن</span>
+  <span onClick={() => navigate("/contact")}>اتصل بنا</span>
+  <span onClick={() => navigate("/products")}>المنتجات</span>
+</div>
 
         <div className="nav-actions">
  
@@ -130,23 +133,9 @@ const handleKeyDown = (e) => {
                   الملف الشخصي
                 </button>
 
-                {/* لوحة التحكم حسب الـ role */}
-                <button className="dropdown-item" onClick={handleDashboard}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
-                    <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-                    <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
-                  </svg>
-                  {user.role === "seller" ? "لوحة البائع" : "حسابي"}
-                </button>
+              
 
-                {/* الإعدادات */}
-                <button className="dropdown-item" onClick={() => { setDropdownOpen(false); navigate("/settings"); }}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
-                    <circle cx="12" cy="12" r="3"/>
-                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-                  </svg>
-                  الإعدادات
-                </button>
+            
 
                 <div className="dropdown-divider" />
 

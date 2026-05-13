@@ -14,8 +14,18 @@ const productSchema = new mongoose.Schema({
   featured:    { type: Boolean, default: false },
 
 
-reviews: [mongoose.Schema.Types.Mixed],  // يقبل أي شيء!
-rating: { type: Number, default: 0 },
+reviews: [
+  {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    rating: { type: Number, required: true },
+    comment: { type: String, default: "" },
+    createdAt: { type: Date, default: Date.now },
+  },
+],rating: { type: Number, default: 0 },
 numReviews: { type: Number, default: 0 },
 
   sku:         { type: String },
@@ -25,6 +35,7 @@ numReviews: { type: Number, default: 0 },
   ecoFeatures: [{ type: String }],
   certificates:{ type: String },
   status:      { type: String, enum: ["pending", "approved", "rejected"], default: "pending" },
+
   seller:      { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 }, { timestamps: true });
 

@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { FaEye, FaCheck, FaTimes, FaSpinner, FaUser } from "react-icons/fa";
 import "../../assets/Admin.css";
-
+import AdminLayout from "../../components/Admin/AdminLayout";
+import "../../assets/AdminLayout.css";
 function AdminBuyers() {
   const [buyers, setBuyers]               = useState([]);
   const [loading, setLoading]             = useState(true);
@@ -86,14 +87,14 @@ function AdminBuyers() {
           <div className="card-num">{counts.all}</div>
           <div className="card-label">إجمالي المشترين</div>
         </div>
-        <div className="card green">
+        {/* <div className="card green">
           <div className="card-num">{counts.active}</div>
           <div className="card-label">نشط</div>
         </div>
         <div className="card red">
           <div className="card-num">{counts.inactive}</div>
           <div className="card-label">موقوف</div>
-        </div>
+        </div> */}
       </div>
 
       {/* ===== جدول ===== */}
@@ -146,8 +147,8 @@ function AdminBuyers() {
                 <th>البريد الإلكتروني</th>
                 <th>الهاتف</th>
                 <th>تاريخ التسجيل</th>
-                <th>الحالة</th>
-                <th>الإجراءات</th>
+                {/* <th>الحالة</th>
+                <th>الإجراءات</th> */}
               </tr>
             </thead>
             <tbody>
@@ -163,9 +164,9 @@ function AdminBuyers() {
                   <td>{buyer.phone || "—"}</td>
                   <td>{new Date(buyer.createdAt).toLocaleDateString("ar-EG")}</td>
                   <td>
-                    <span className={`status ${buyer.isActive ? "approved" : "rejected"}`}>
+                    {/* <span className={`status ${buyer.isActive ? "approved" : "rejected"}`}>
                       {buyer.isActive ? "نشط" : "موقوف"}
-                    </span>
+                    </span> */}
                   </td>
                   <td className="actions">
                     {actionLoading === buyer._id ? (
@@ -179,13 +180,7 @@ function AdminBuyers() {
                         >
                           <FaEye />
                         </button>
-                        <button
-                          className={`action-btn ${buyer.isActive ? "reject" : "approve"}`}
-                          title={buyer.isActive ? "إيقاف المشتري" : "تفعيل المشتري"}
-                          onClick={() => handleToggleActive(buyer._id, buyer.isActive)}
-                        >
-                          {buyer.isActive ? <FaTimes /> : <FaCheck />}
-                        </button>
+                        
                       </>
                     )}
                   </td>
@@ -217,12 +212,7 @@ function AdminBuyers() {
               {selectedBuyer.city && (
                 <span>المدينة: <strong>{selectedBuyer.city}</strong></span>
               )}
-              <span>
-                الحالة:{" "}
-                <strong>
-                  {selectedBuyer.isActive ? "نشط ✅" : "موقوف ❌"}
-                </strong>
-              </span>
+             
               <span>
                 تاريخ التسجيل:{" "}
                 <strong>
@@ -232,12 +222,7 @@ function AdminBuyers() {
             </div>
 
             <div className="modal-actions">
-              <button
-                className={`modal-btn ${selectedBuyer.isActive ? "reject" : "approve"}`}
-                onClick={() => handleToggleActive(selectedBuyer._id, selectedBuyer.isActive)}
-              >
-                {selectedBuyer.isActive ? <><FaTimes /> إيقاف الحساب</> : <><FaCheck /> تفعيل الحساب</>}
-              </button>
+            
               <button className="modal-btn close" onClick={() => setSelectedBuyer(null)}>
                 إغلاق
               </button>

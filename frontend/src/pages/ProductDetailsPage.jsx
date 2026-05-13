@@ -61,9 +61,17 @@ export default function ProductDetailsPage({ onAddToCart }) {
   const [cartMsg, setCartMsg]       = useState("");
   const [showAllReviews, setShowAllReviews] = useState(false);
 
+const discount = product?.discount || 0;
+const hasDiscount = discount > 0;
+
+const originalPrice = parseFloat(product?.price || 0);
+
+const finalPrice = hasDiscount
+  ? originalPrice - (originalPrice * discount) / 100
+  : originalPrice;
 
 
-const reviews = product?.reviews || [];
+const reviews = product?.reviews ?? [];
 
 const sortedReviews = [...reviews].sort(
   (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
@@ -93,7 +101,12 @@ const visibleReviews = showAllReviews
       .catch(() => {});
   }, [id, token]);
 
-  const rating  = product?.rating ?? 0;
+  const rating =
+  product?.rating ??
+  (product?.reviews?.length
+    ? product.reviews.reduce((a, b) => a + (b.rating || 0), 0) /
+      product.reviews.length
+    : 0);
   
 console.log("REVIEWS:", reviews);
 console.log("FIRST USER:", reviews?.[0]?.user);
@@ -206,10 +219,32 @@ return (
 
           <div className="rating-box">
             <StarRating rating={rating} />
-            <span>{(rating || 0).toFixed(1)} ({reviews.length} تقييم)</span>
+            <span>
+  {(rating || 0).toFixed(1)} ({reviews?.length || 0} تقييم)
+</span>
           </div>
 
-          <h2 className="price">{product.price} جنيه</h2>
+<div className="price-box">
+  {hasDiscount ? (
+    <>
+      <h2 className="price">
+        {finalPrice.toLocaleString("ar-EG")} جنيه
+      </h2>
+
+      <span className="old-price">
+        {originalPrice.toLocaleString("ar-EG")} جنيه
+      </span>
+
+      <span className="discount-badge">
+        خصم {discount}%
+      </span>
+    </>
+  ) : (
+    <h2 className="price">
+      {originalPrice.toLocaleString("ar-EG")} جنيه
+    </h2>
+  )}
+</div>
           <p className="desc">{product.description}</p>
 
           <div className="extra">
@@ -319,7 +354,7 @@ return (
       </div>
 
       {/* line */}
-      {i !== product.reviews.length - 1 && (
+      {i !== reviews.length - 1&& (
         <div className="review-divider"></div>
       )}
 
